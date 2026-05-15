@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import './App.css'
+import logo from './assets/Logo Cesart.png'
 
 function App() {
   const [materiales, setMateriales] = useState([])
@@ -89,9 +90,7 @@ function App() {
         })
         .eq('id', editandoId)
 
-      if (error) {
-        alert('Error al editar')
-      } else {
+      if (!error) {
         limpiarFormulario()
         obtenerMateriales()
       }
@@ -111,18 +110,15 @@ function App() {
         },
       ])
 
-    if (error) {
-      alert('Error al guardar')
-    } else {
+    if (!error) {
       limpiarFormulario()
       obtenerMateriales()
     }
   }
 
   async function eliminarMaterial(id) {
-    const confirmar = confirm(
-      '¿Eliminar material?'
-    )
+    const confirmar =
+      confirm('¿Eliminar material?')
 
     if (!confirmar) return
 
@@ -138,12 +134,46 @@ function App() {
 
   return (
     <div className="container">
-      <h1 className="titulo">
-        Sistema de Stock
-      </h1>
+
+      <div className="header">
+
+        <div className="titulo-area">
+
+          <h1 className="titulo">
+            Sistema de Stock Cesart
+          </h1>
+
+          {usuario && (
+            <div className="admin-bar">
+
+              <span className="estado-admin">
+                Bienvenido Administrador
+                (Conectado ✅)
+              </span>
+
+              <button
+                className="boton salir"
+                onClick={cerrarSesion}
+              >
+                Cerrar Sesión
+              </button>
+
+            </div>
+          )}
+
+        </div>
+
+        <img
+          src={logo}
+          alt="Logo"
+          className="logoEmpresa"
+        />
+
+      </div>
 
       {!usuario ? (
         <div className="panel">
+
           <div className="login-fila">
 
             <h2 className="login-titulo">
@@ -178,104 +208,80 @@ function App() {
             </button>
 
           </div>
+
         </div>
       ) : (
-        <>
-          <div className="admin-bar">
-            <span className="estado-admin">
-              Bienvenido Administrador
-              (Conectado ✅)
-            </span>
+        <div className="panel">
+
+          <h2>
+            {editandoId
+              ? 'Editar Material'
+              : 'Agregar Material'}
+          </h2>
+
+          <div className="formulario">
+
+            <input
+              className="input"
+              placeholder="Descripción"
+              value={descripcion}
+              onChange={(e)=>
+                setDescripcion(e.target.value)
+              }
+            />
+
+            <input
+              className="input"
+              placeholder="Cantidad"
+              value={cantidad}
+              onChange={(e)=>
+                setCantidad(e.target.value)
+              }
+            />
+
+            <input
+              className="input"
+              placeholder="Medida"
+              value={medida}
+              onChange={(e)=>
+                setMedida(e.target.value)
+              }
+            />
+
+            <input
+              className="input"
+              placeholder="Espesor"
+              value={espesor}
+              onChange={(e)=>
+                setEspesor(e.target.value)
+              }
+            />
+
+            <input
+              className="input"
+              placeholder="Color"
+              value={color}
+              onChange={(e)=>
+                setColor(e.target.value)
+              }
+            />
 
             <button
-              className="boton salir"
-              onClick={cerrarSesion}
+              className="boton boton-principal"
+              onClick={agregarMaterial}
             >
-              Cerrar Sesión
-            </button>
-          </div>
-
-          <div className="panel">
-            <h2>
               {editandoId
-                ? 'Editar Material'
+                ? 'Guardar Cambios'
                 : 'Agregar Material'}
-            </h2>
+            </button>
 
-            <div className="formulario">
-
-              <input
-                className="input"
-                placeholder="Descripción"
-                value={descripcion}
-                onChange={(e) =>
-                  setDescripcion(
-                    e.target.value
-                  )
-                }
-              />
-
-              <input
-                className="input"
-                placeholder="Cantidad"
-                value={cantidad}
-                onChange={(e) =>
-                  setCantidad(
-                    e.target.value
-                  )
-                }
-              />
-
-              <input
-                className="input"
-                placeholder="Medida"
-                value={medida}
-                onChange={(e) =>
-                  setMedida(
-                    e.target.value
-                  )
-                }
-              />
-
-              <input
-                className="input"
-                placeholder="Espesor"
-                value={espesor}
-                onChange={(e) =>
-                  setEspesor(
-                    e.target.value
-                  )
-                }
-              />
-
-              <input
-                className="input"
-                placeholder="Color"
-                value={color}
-                onChange={(e) =>
-                  setColor(
-                    e.target.value
-                  )
-                }
-              />
-
-              <button
-                className="boton boton-principal"
-                onClick={
-                  agregarMaterial
-                }
-              >
-                {editandoId
-                  ? 'Guardar Cambios'
-                  : 'Agregar Material'}
-              </button>
-
-            </div>
           </div>
-        </>
+
+        </div>
       )}
 
       <table className="tabla">
+
         <thead>
           <tr>
             <th>Descripción</th>
@@ -290,65 +296,58 @@ function App() {
         </thead>
 
         <tbody>
+
           {materiales.map(
             (material) => (
-              <tr
-                key={material.id}
-              >
-                <td>
-                  {material.descripcion}
-                </td>
 
-                <td>
-                  {material.cantidad}
-                </td>
+            <tr key={material.id}>
 
-                <td>
-                  {material.medida}
-                </td>
+              <td>{material.descripcion}</td>
+              <td>{material.cantidad}</td>
+              <td>{material.medida}</td>
+              <td>{material.espesor}</td>
+              <td>{material.color}</td>
 
-                <td>
-                  {material.espesor}
-                </td>
+              {usuario && (
 
-                <td>
-                  {material.color}
-                </td>
+              <td>
 
-                {usuario && (
-                  <td>
-                    <div className="acciones">
+                <div className="acciones">
 
-                      <button
-                        className="boton editar"
-                        onClick={() =>
-                          editarMaterial(
-                            material
-                          )
-                        }
-                      >
-                        Editar
-                      </button>
+                  <button
+                    className="boton editar"
+                    onClick={() =>
+                      editarMaterial(material)
+                    }
+                  >
+                    Editar
+                  </button>
 
-                      <button
-                        className="boton eliminar"
-                        onClick={() =>
-                          eliminarMaterial(
-                            material.id
-                          )
-                        }
-                      >
-                        Eliminar
-                      </button>
+                  <button
+                    className="boton eliminar"
+                    onClick={() =>
+                      eliminarMaterial(
+                        material.id
+                      )
+                    }
+                  >
+                    Eliminar
+                  </button>
 
-                    </div>
-                  </td>
-                )}
-              </tr>
-            )
-          )}
+                </div>
+
+              </td>
+
+              )}
+
+            </tr>
+
+          ))}
+
         </tbody>
+
       </table>
+
     </div>
   )
 }

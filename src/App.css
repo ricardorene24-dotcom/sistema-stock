@@ -24,11 +24,38 @@ body {
   padding: 40px 60px;
 }
 
+/* HEADER + LOGO */
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.titulo-area {
+  grid-column: 2;
+  text-align: center;
+}
+
+.logoEmpresa {
+  grid-column: 3;
+  justify-self: start;
+  width: 230px;
+  height: auto;
+  object-fit: contain;
+  margin-left: 30px;
+}
+
+/* TITULO */
+
 .titulo {
   text-align: center;
   font-size: 44px;
   margin-bottom: 8px;
 }
+
+/* ADMIN */
 
 .admin-bar {
   display: flex;
@@ -36,13 +63,15 @@ body {
   align-items: center;
   gap: 14px;
   margin-top: 10px;
-  margin-bottom: 35px;
+  margin-bottom: 20px;
 }
 
 .estado-admin {
   font-size: 16px;
   color: #cbd5e1;
 }
+
+/* PANEL */
 
 .panel {
   background: #111827;
@@ -53,11 +82,10 @@ body {
 }
 
 .panel h2 {
-  text-align: center;
   margin-top: 0;
 }
 
-/* LOGIN HORIZONTAL */
+/* LOGIN */
 
 .login-fila {
   display: flex;
@@ -69,7 +97,6 @@ body {
 
 .login-titulo {
   margin: 0;
-  white-space: nowrap;
 }
 
 .login-input {
@@ -77,11 +104,10 @@ body {
 }
 
 .login-boton {
-  width: auto;
-  min-width: 170px;
+  min-width: 160px;
 }
 
-/* FORMULARIO ADMIN */
+/* FORMULARIO */
 
 .formulario {
   display: grid;
@@ -101,6 +127,8 @@ body {
 .input::placeholder {
   color: #cbd5e1;
 }
+
+/* BOTONES */
 
 .boton {
   padding: 12px 16px;
@@ -124,6 +152,16 @@ body {
 .salir {
   width: auto;
   background: #334155;
+  border: 1px solid #020617;
+}
+
+.editar {
+  background: #f59e0b;
+  border: 1px solid #020617;
+}
+
+.eliminar {
+  background: #ef4444;
   border: 1px solid #020617;
 }
 
@@ -154,51 +192,42 @@ body {
 .acciones {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 10px;
-}
-
-.editar,
-.eliminar {
-  width: auto;
-  padding: 7px 12px;
-  font-size: 13px;
-  border: 1px solid #020617;
-}
-
-.editar {
-  background: #f59e0b;
-}
-
-.eliminar {
-  background: #ef4444;
 }
 
 /* RESPONSIVE */
 
-@media (max-width:900px) {
+@media(max-width:900px){
 
-  .login-fila {
-    flex-direction: column;
+  .header{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
   }
 
-  .login-input {
-    width: 100%;
+  .logoEmpresa{
+    width:160px;
+    margin-left:0;
   }
 
-  .formulario {
-    grid-template-columns: 1fr;
+  .login-fila{
+    flex-direction:column;
   }
 
-  .boton-principal {
-    grid-column: span 1;
+  .login-input{
+    width:100%;
   }
 
-  .admin-bar {
-    flex-direction: column;
+  .formulario{
+    grid-template-columns:1fr;
   }
 
-  .container {
-    padding: 20px;
+  .boton-principal{
+    grid-column:span 1;
   }
+
+  .container{
+    padding:20px;
+  }
+
 }
