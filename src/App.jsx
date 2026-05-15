@@ -13,6 +13,7 @@ function App() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [usuario, setUsuario] = useState(null)
+  const [editandoId, setEditandoId] = useState(null)
 
   useEffect(() => {
     obtenerMateriales()
@@ -60,19 +61,52 @@ function App() {
     setUsuario(null)
   }
 
-  async function agregarMaterial() {
+ async function agregarMaterial() {
+  if (editandoId) {
     const { error } = await supabase
       .from('materiales')
-      .insert([
-        {
-          descripcion,
-          cantidad,
-          medida,
-          espesor,
-          color,
-        },
-      ])
+      .update({
+        descripcion,
+        cantidad,
+        medida,
+        espesor,
+        color,
+      })
+      .eq('id', editandoId)
 
+    if (error) {
+      alert('Error al editar')
+    } else {
+      alert('Material actualizado')
+
+      limpiarFormulario()
+      obtenerMateriales()
+    }
+
+    return
+  }
+
+  const { error } = await supabase
+    .from('materiales')
+    .insert([
+      {
+        descripcion,
+        cantidad,
+        medida,
+        espesor,
+        color,
+      },
+    ])
+
+  if (error) {
+    alert('Error al guardar')
+  } else {
+    alert('Material agregado')
+
+    limpiarFormulario()
+    obtenerMateriales()
+  }
+}
     if (error) {
       alert('Error al guardar')
       console.log(error)
@@ -87,12 +121,29 @@ function App() {
 
       obtenerMateriales()
     }
-  
+  function limpiarFormulario() {
+  setDescripcion('')
+  setCantidad('')
+  setMedida('')
+  setEspesor('')
+  setColor('')
+  setEditandoId(null)
+}
   }
   async function eliminarMaterial(id) {
   const confirmar = confirm(
     '¿Eliminar material?'
+
   )
+  function editarMaterial(material) {
+  setEditandoId(material.id)
+
+  setDescripcion(material.descripcion)
+  setCantidad(material.cantidad)
+  setMedida(material.medida)
+  setEspesor(material.espesor)
+  setColor(material.color)
+}
 
   if (!confirmar) return
 
@@ -202,9 +253,11 @@ function App() {
               onChange={(e) => setColor(e.target.value)}
             />
 
-            <button onClick={agregarMaterial}>
-              Agregar Material
-            </button>
+<button onClick={agregarMaterial}>
+  {editandoId
+    ? 'Guardar Cambios'
+    : 'Agregar Material'}
+</button>
           </div>
         </div>
       )}
@@ -238,11 +291,24 @@ function App() {
               <td>{material.color}</td>
      {usuario && (
   <td>
-    <button
-      onClick={() => eliminarMaterial(material.id)}
-    >
-      Eliminar
-    </button>
+<div
+  style={{
+    display: 'flex',
+    gap: '10px',
+  }}
+>
+  <button
+    onClick={() => editarMaterial(material)}
+  >
+    Editar
+  </button>
+
+  <button
+    onClick={() => eliminarMaterial(material.id)}
+  >
+    Eliminar
+  </button>
+</div>
   </td>
 )}
             </tr>
