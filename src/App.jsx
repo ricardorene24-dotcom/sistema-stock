@@ -237,11 +237,15 @@ function App() {
               <td>{material.espesor}</td>
               <td>{material.color}</td>
               <td>
-  <button
-    onClick={() => eliminarMaterial(material.id)}
-  >
-    Eliminar
-  </button>
+ 
+  {usuario && (
+    <button
+      onClick={() => eliminarMaterial(material.id)}
+    >
+      Eliminar
+    </button>
+  )}
+
 </td>
             </tr>
           ))}
