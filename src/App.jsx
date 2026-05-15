@@ -280,26 +280,29 @@ function App() {
         </div>
       )}
 
-      <table className="tabla">
+      <div className="tabla-scroll">
 
-        <thead>
-          <tr>
-            <th>Descripción</th>
-            <th>Cantidad</th>
-            <th>Medida</th>
-            <th>Espesor</th>
-            <th>Color</th>
+        <table className="tabla">
 
-            {usuario &&
+          <thead>
+            <tr>
+
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Medida</th>
+              <th>Espesor</th>
+              <th>Color</th>
+
+              {usuario &&
               <th>Acciones</th>}
-          </tr>
-        </thead>
 
-        <tbody>
+            </tr>
+          </thead>
+
+          <tbody>
 
           {materiales.map(
-            (material) => (
-
+            (material)=>(
             <tr key={material.id}>
 
               <td>{material.descripcion}</td>
@@ -309,44 +312,44 @@ function App() {
               <td>{material.color}</td>
 
               {usuario && (
-
               <td>
 
-                <div className="acciones">
+              <div className="acciones">
 
-                  <button
-                    className="boton editar"
-                    onClick={() =>
-                      editarMaterial(material)
-                    }
-                  >
-                    Editar
-                  </button>
+              <button
+                className="boton editar"
+                onClick={() =>
+                  editarMaterial(material)
+                }
+              >
+                Editar
+              </button>
 
-                  <button
-                    className="boton eliminar"
-                    onClick={() =>
-                      eliminarMaterial(
-                        material.id
-                      )
-                    }
-                  >
-                    Eliminar
-                  </button>
+              <button
+                className="boton eliminar"
+                onClick={() =>
+                  eliminarMaterial(
+                    material.id
+                  )
+                }
+              >
+                Eliminar
+              </button>
 
-                </div>
+              </div>
 
               </td>
-
               )}
 
             </tr>
+            )
+          )}
 
-          ))}
+          </tbody>
 
-        </tbody>
+        </table>
 
-      </table>
+      </div>
 
     </div>
   )

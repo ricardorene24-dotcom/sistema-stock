@@ -24,7 +24,7 @@ body {
   padding: 40px 60px;
 }
 
-/* HEADER + LOGO */
+/* HEADER */
 
 .header {
   display: grid;
@@ -167,8 +167,14 @@ body {
 
 /* TABLA */
 
+.tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .tabla {
   width: 100%;
+  min-width: 750px;
   border-collapse: collapse;
   background: #111827;
   border-radius: 14px;
@@ -195,9 +201,13 @@ body {
   gap: 10px;
 }
 
-/* RESPONSIVE */
+/* MÓVIL */
 
 @media(max-width:900px){
+
+  .container{
+    padding:20px;
+  }
 
   .header{
     display:flex;
@@ -206,16 +216,25 @@ body {
   }
 
   .logoEmpresa{
-    width:160px;
+    width:150px;
     margin-left:0;
+  }
+
+  .titulo{
+    font-size:30px;
   }
 
   .login-fila{
     flex-direction:column;
   }
 
-  .login-input{
+  .login-input,
+  .login-boton{
     width:100%;
+  }
+
+  .admin-bar{
+    flex-direction:column;
   }
 
   .formulario{
@@ -226,8 +245,14 @@ body {
     grid-column:span 1;
   }
 
-  .container{
-    padding:20px;
+  .tabla th,
+  .tabla td{
+    padding:12px;
+    font-size:13px;
   }
 
+  .acciones{
+    flex-direction:column;
+    gap:8px;
+  }
 }
