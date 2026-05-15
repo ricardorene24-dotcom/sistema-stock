@@ -13,11 +13,11 @@ function App() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [usuario, setUsuario] = useState(null)
+
   const [editandoId, setEditandoId] = useState(null)
 
   useEffect(() => {
     obtenerMateriales()
-
     verificarUsuario()
   }, [])
 
@@ -50,114 +50,101 @@ function App() {
       alert('Credenciales incorrectas')
     } else {
       alert('Bienvenido administrador')
-
       verificarUsuario()
     }
   }
 
   async function cerrarSesion() {
     await supabase.auth.signOut()
-
     setUsuario(null)
   }
 
- async function agregarMaterial() {
-  if (editandoId) {
-    const { error } = await supabase
-      .from('materiales')
-      .update({
-        descripcion,
-        cantidad,
-        medida,
-        espesor,
-        color,
-      })
-      .eq('id', editandoId)
+  async function agregarMaterial() {
+    if (editandoId) {
+      const { error } = await supabase
+        .from('materiales')
+        .update({
+          descripcion,
+          cantidad,
+          medida,
+          espesor,
+          color,
+        })
+        .eq('id', editandoId)
 
-    if (error) {
-      alert('Error al editar')
-    } else {
-      alert('Material actualizado')
+      if (error) {
+        alert('Error al editar')
+      } else {
+        alert('Material actualizado')
 
-      limpiarFormulario()
-      obtenerMateriales()
+        limpiarFormulario()
+        obtenerMateriales()
+      }
+
+      return
     }
 
-    return
-  }
+    const { error } = await supabase
+      .from('materiales')
+      .insert([
+        {
+          descripcion,
+          cantidad,
+          medida,
+          espesor,
+          color,
+        },
+      ])
 
-  const { error } = await supabase
-    .from('materiales')
-    .insert([
-      {
-        descripcion,
-        cantidad,
-        medida,
-        espesor,
-        color,
-      },
-    ])
-
-  if (error) {
-    alert('Error al guardar')
-  } else {
-    alert('Material agregado')
-
-    limpiarFormulario()
-    obtenerMateriales()
-  }
-}
     if (error) {
       alert('Error al guardar')
       console.log(error)
     } else {
       alert('Material agregado')
 
-      setDescripcion('')
-      setCantidad('')
-      setMedida('')
-      setEspesor('')
-      setColor('')
-
+      limpiarFormulario()
       obtenerMateriales()
     }
+  }
+
   function limpiarFormulario() {
-  setDescripcion('')
-  setCantidad('')
-  setMedida('')
-  setEspesor('')
-  setColor('')
-  setEditandoId(null)
-}
+    setDescripcion('')
+    setCantidad('')
+    setMedida('')
+    setEspesor('')
+    setColor('')
+    setEditandoId(null)
   }
-  async function eliminarMaterial(id) {
-  const confirmar = confirm(
-    '¿Eliminar material?'
 
-  )
   function editarMaterial(material) {
-  setEditandoId(material.id)
+    setEditandoId(material.id)
 
-  setDescripcion(material.descripcion)
-  setCantidad(material.cantidad)
-  setMedida(material.medida)
-  setEspesor(material.espesor)
-  setColor(material.color)
-}
-
-  if (!confirmar) return
-
-  const { error } = await supabase
-    .from('materiales')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
-    alert('Error al eliminar')
-  } else {
-    obtenerMateriales()
+    setDescripcion(material.descripcion)
+    setCantidad(material.cantidad)
+    setMedida(material.medida)
+    setEspesor(material.espesor)
+    setColor(material.color)
   }
-}
+
+  async function eliminarMaterial(id) {
+    const confirmar = confirm(
+      '¿Eliminar material?'
+    )
+
+    if (!confirmar) return
+
+    const { error } = await supabase
+      .from('materiales')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      alert('Error al eliminar')
+    } else {
+      obtenerMateriales()
+    }
+  }
+
   return (
     <div
       style={{
@@ -208,7 +195,11 @@ function App() {
             Cerrar Sesión
           </button>
 
-          <h2>Agregar Material</h2>
+          <h2>
+            {editandoId
+              ? 'Editar Material'
+              : 'Agregar Material'}
+          </h2>
 
           <div
             style={{
@@ -222,42 +213,52 @@ function App() {
               type="text"
               placeholder="Descripción"
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) =>
+                setDescripcion(e.target.value)
+              }
             />
 
             <input
               type="number"
               placeholder="Cantidad"
               value={cantidad}
-              onChange={(e) => setCantidad(e.target.value)}
+              onChange={(e) =>
+                setCantidad(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Medida"
               value={medida}
-              onChange={(e) => setMedida(e.target.value)}
+              onChange={(e) =>
+                setMedida(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Espesor"
               value={espesor}
-              onChange={(e) => setEspesor(e.target.value)}
+              onChange={(e) =>
+                setEspesor(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Color"
               value={color}
-              onChange={(e) => setColor(e.target.value)}
+              onChange={(e) =>
+                setColor(e.target.value)
+              }
             />
 
-<button onClick={agregarMaterial}>
-  {editandoId
-    ? 'Guardar Cambios'
-    : 'Agregar Material'}
-</button>
+            <button onClick={agregarMaterial}>
+              {editandoId
+                ? 'Guardar Cambios'
+                : 'Agregar Material'}
+            </button>
           </div>
         </div>
       )}
@@ -277,6 +278,7 @@ function App() {
             <th>Medida</th>
             <th>Espesor</th>
             <th>Color</th>
+
             {usuario && <th>Acciones</th>}
           </tr>
         </thead>
@@ -289,28 +291,33 @@ function App() {
               <td>{material.medida}</td>
               <td>{material.espesor}</td>
               <td>{material.color}</td>
-     {usuario && (
-  <td>
-<div
-  style={{
-    display: 'flex',
-    gap: '10px',
-  }}
->
-  <button
-    onClick={() => editarMaterial(material)}
-  >
-    Editar
-  </button>
 
-  <button
-    onClick={() => eliminarMaterial(material.id)}
-  >
-    Eliminar
-  </button>
-</div>
-  </td>
-)}
+              {usuario && (
+                <td>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '10px',
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        editarMaterial(material)
+                      }
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        eliminarMaterial(material.id)
+                      }
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
