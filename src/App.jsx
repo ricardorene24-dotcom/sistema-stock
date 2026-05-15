@@ -4,17 +4,14 @@ import './App.css'
 
 function App() {
   const [materiales, setMateriales] = useState([])
-
   const [descripcion, setDescripcion] = useState('')
   const [cantidad, setCantidad] = useState('')
   const [medida, setMedida] = useState('')
   const [espesor, setEspesor] = useState('')
   const [color, setColor] = useState('')
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [usuario, setUsuario] = useState(null)
-
   const [editandoId, setEditandoId] = useState(null)
 
   useEffect(() => {
@@ -23,10 +20,7 @@ function App() {
   }, [])
 
   async function verificarUsuario() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
+    const { data: { user } } = await supabase.auth.getUser()
     setUsuario(user)
   }
 
@@ -36,9 +30,7 @@ function App() {
       .select('*')
       .order('id', { ascending: false })
 
-    if (!error) {
-      setMateriales(data)
-    }
+    if (!error) setMateriales(data)
   }
 
   async function iniciarSesion() {
@@ -71,7 +63,6 @@ function App() {
 
   function editarMaterial(material) {
     setEditandoId(material.id)
-
     setDescripcion(material.descripcion)
     setCantidad(material.cantidad)
     setMedida(material.medida)
@@ -125,10 +116,7 @@ function App() {
   }
 
   async function eliminarMaterial(id) {
-    const confirmar = confirm(
-      '¿Eliminar material?'
-    )
-
+    const confirmar = confirm('¿Eliminar material?')
     if (!confirmar) return
 
     const { error } = await supabase
@@ -145,9 +133,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1 className="titulo">
-        Sistema de Stock
-      </h1>
+      <h1 className="titulo">Sistema de Stock</h1>
 
       {!usuario ? (
         <div className="panel">
@@ -159,9 +145,7 @@ function App() {
               type="email"
               placeholder="Correo"
               value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <input
@@ -169,13 +153,11 @@ function App() {
               type="password"
               placeholder="Contraseña"
               value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             <button
-              className="boton"
+              className="boton boton-principal"
               onClick={iniciarSesion}
             >
               Iniciar Sesión
@@ -183,83 +165,75 @@ function App() {
           </div>
         </div>
       ) : (
-        <div className="panel">
-          <p>Administrador conectado ✅</p>
-
-          <button
-            className="boton salir"
-            onClick={cerrarSesion}
-          >
-            Cerrar Sesión
-          </button>
-
-          <h2>
-            {editandoId
-              ? 'Editar Material'
-              : 'Agregar Material'}
-          </h2>
-
-          <div className="formulario">
-            <input
-              className="input"
-              type="text"
-              placeholder="Descripción"
-              value={descripcion}
-              onChange={(e) =>
-                setDescripcion(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              type="text"
-              placeholder="Cantidad"
-              value={cantidad}
-              onChange={(e) =>
-                setCantidad(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              type="text"
-              placeholder="Medida"
-              value={medida}
-              onChange={(e) =>
-                setMedida(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              type="text"
-              placeholder="Espesor"
-              value={espesor}
-              onChange={(e) =>
-                setEspesor(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              type="text"
-              placeholder="Color"
-              value={color}
-              onChange={(e) =>
-                setColor(e.target.value)
-              }
-            />
+        <>
+          <div className="admin-bar">
+            <span className="estado-admin">
+              Bienvenido Administrador (Conectado ✅)
+            </span>
 
             <button
-              className="boton"
-              onClick={agregarMaterial}
+              className="boton salir"
+              onClick={cerrarSesion}
             >
-              {editandoId
-                ? 'Guardar Cambios'
-                : 'Agregar Material'}
+              Cerrar Sesión
             </button>
           </div>
-        </div>
+
+          <div className="panel">
+            <h2>
+              {editandoId ? 'Editar Material' : 'Agregar Material'}
+            </h2>
+
+            <div className="formulario">
+              <input
+                className="input"
+                type="text"
+                placeholder="Descripción"
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+              />
+
+              <input
+                className="input"
+                type="text"
+                placeholder="Cantidad"
+                value={cantidad}
+                onChange={(e) => setCantidad(e.target.value)}
+              />
+
+              <input
+                className="input"
+                type="text"
+                placeholder="Medida"
+                value={medida}
+                onChange={(e) => setMedida(e.target.value)}
+              />
+
+              <input
+                className="input"
+                type="text"
+                placeholder="Espesor"
+                value={espesor}
+                onChange={(e) => setEspesor(e.target.value)}
+              />
+
+              <input
+                className="input"
+                type="text"
+                placeholder="Color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+              />
+
+              <button
+                className="boton boton-principal"
+                onClick={agregarMaterial}
+              >
+                {editandoId ? 'Guardar Cambios' : 'Agregar Material'}
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       <table className="tabla">
@@ -270,7 +244,6 @@ function App() {
             <th>Medida</th>
             <th>Espesor</th>
             <th>Color</th>
-
             {usuario && <th>Acciones</th>}
           </tr>
         </thead>
@@ -289,20 +262,14 @@ function App() {
                   <div className="acciones">
                     <button
                       className="boton editar"
-                      onClick={() =>
-                        editarMaterial(material)
-                      }
+                      onClick={() => editarMaterial(material)}
                     >
                       Editar
                     </button>
 
                     <button
                       className="boton eliminar"
-                      onClick={() =>
-                        eliminarMaterial(
-                          material.id
-                        )
-                      }
+                      onClick={() => eliminarMaterial(material.id)}
                     >
                       Eliminar
                     </button>
