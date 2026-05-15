@@ -224,7 +224,7 @@ function App() {
             <th>Medida</th>
             <th>Espesor</th>
             <th>Color</th>
-            <th>Acciones</th>
+            {usuario && <th>Acciones</th>}
           </tr>
         </thead>
 
@@ -236,17 +236,15 @@ function App() {
               <td>{material.medida}</td>
               <td>{material.espesor}</td>
               <td>{material.color}</td>
-              <td>
- 
-  {usuario && (
+     {usuario && (
+  <td>
     <button
       onClick={() => eliminarMaterial(material.id)}
     >
       Eliminar
     </button>
-  )}
-
-</td>
+  </td>
+)}
             </tr>
           ))}
         </tbody>
