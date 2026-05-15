@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import './App.css'
 
 function App() {
   const [materiales, setMateriales] = useState([])
@@ -59,6 +60,25 @@ function App() {
     setUsuario(null)
   }
 
+  function limpiarFormulario() {
+    setDescripcion('')
+    setCantidad('')
+    setMedida('')
+    setEspesor('')
+    setColor('')
+    setEditandoId(null)
+  }
+
+  function editarMaterial(material) {
+    setEditandoId(material.id)
+
+    setDescripcion(material.descripcion)
+    setCantidad(material.cantidad)
+    setMedida(material.medida)
+    setEspesor(material.espesor)
+    setColor(material.color)
+  }
+
   async function agregarMaterial() {
     if (editandoId) {
       const { error } = await supabase
@@ -76,7 +96,6 @@ function App() {
         alert('Error al editar')
       } else {
         alert('Material actualizado')
-
         limpiarFormulario()
         obtenerMateriales()
       }
@@ -98,32 +117,11 @@ function App() {
 
     if (error) {
       alert('Error al guardar')
-      console.log(error)
     } else {
       alert('Material agregado')
-
       limpiarFormulario()
       obtenerMateriales()
     }
-  }
-
-  function limpiarFormulario() {
-    setDescripcion('')
-    setCantidad('')
-    setMedida('')
-    setEspesor('')
-    setColor('')
-    setEditandoId(null)
-  }
-
-  function editarMaterial(material) {
-    setEditandoId(material.id)
-
-    setDescripcion(material.descripcion)
-    setCantidad(material.cantidad)
-    setMedida(material.medida)
-    setEspesor(material.espesor)
-    setColor(material.color)
   }
 
   async function eliminarMaterial(id) {
@@ -146,52 +144,52 @@ function App() {
   }
 
   return (
-    <div
-      style={{
-        padding: '30px',
-        fontFamily: 'Arial',
-      }}
-    >
-      <h1>Sistema de Stock</h1>
+    <div className="container">
+      <h1 className="titulo">
+        Sistema de Stock
+      </h1>
 
       {!usuario ? (
-        <div
-          style={{
-            marginBottom: '30px',
-            maxWidth: '300px',
-          }}
-        >
+        <div className="panel">
           <h2>Login Administrador</h2>
 
-          <input
-            type="email"
-            placeholder="Correo"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div className="formulario">
+            <input
+              className="input"
+              type="email"
+              placeholder="Correo"
+              value={email}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+            />
 
-          <br />
-          <br />
+            <input
+              className="input"
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+            />
 
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <br />
-          <br />
-
-          <button onClick={iniciarSesion}>
-            Iniciar Sesión
-          </button>
+            <button
+              className="boton"
+              onClick={iniciarSesion}
+            >
+              Iniciar Sesión
+            </button>
+          </div>
         </div>
       ) : (
-        <div style={{ marginBottom: '30px' }}>
+        <div className="panel">
           <p>Administrador conectado ✅</p>
 
-          <button onClick={cerrarSesion}>
+          <button
+            className="boton salir"
+            onClick={cerrarSesion}
+          >
             Cerrar Sesión
           </button>
 
@@ -201,15 +199,9 @@ function App() {
               : 'Agregar Material'}
           </h2>
 
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              maxWidth: '300px',
-            }}
-          >
+          <div className="formulario">
             <input
+              className="input"
               type="text"
               placeholder="Descripción"
               value={descripcion}
@@ -219,7 +211,8 @@ function App() {
             />
 
             <input
-              type="number"
+              className="input"
+              type="text"
               placeholder="Cantidad"
               value={cantidad}
               onChange={(e) =>
@@ -228,6 +221,7 @@ function App() {
             />
 
             <input
+              className="input"
               type="text"
               placeholder="Medida"
               value={medida}
@@ -237,6 +231,7 @@ function App() {
             />
 
             <input
+              className="input"
               type="text"
               placeholder="Espesor"
               value={espesor}
@@ -246,6 +241,7 @@ function App() {
             />
 
             <input
+              className="input"
               type="text"
               placeholder="Color"
               value={color}
@@ -254,7 +250,10 @@ function App() {
               }
             />
 
-            <button onClick={agregarMaterial}>
+            <button
+              className="boton"
+              onClick={agregarMaterial}
+            >
               {editandoId
                 ? 'Guardar Cambios'
                 : 'Agregar Material'}
@@ -263,14 +262,7 @@ function App() {
         </div>
       )}
 
-      <table
-        border="1"
-        cellPadding="10"
-        style={{
-          borderCollapse: 'collapse',
-          width: '100%',
-        }}
-      >
+      <table className="tabla">
         <thead>
           <tr>
             <th>Descripción</th>
@@ -294,13 +286,9 @@ function App() {
 
               {usuario && (
                 <td>
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '10px',
-                    }}
-                  >
+                  <div className="acciones">
                     <button
+                      className="boton editar"
                       onClick={() =>
                         editarMaterial(material)
                       }
@@ -309,8 +297,11 @@ function App() {
                     </button>
 
                     <button
+                      className="boton eliminar"
                       onClick={() =>
-                        eliminarMaterial(material.id)
+                        eliminarMaterial(
+                          material.id
+                        )
                       }
                     >
                       Eliminar
