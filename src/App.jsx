@@ -20,7 +20,10 @@ function App() {
   }, [])
 
   async function verificarUsuario() {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
     setUsuario(user)
   }
 
@@ -30,19 +33,21 @@ function App() {
       .select('*')
       .order('id', { ascending: false })
 
-    if (!error) setMateriales(data)
+    if (!error) {
+      setMateriales(data)
+    }
   }
 
   async function iniciarSesion() {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
     if (error) {
       alert('Credenciales incorrectas')
     } else {
-      alert('Bienvenido administrador')
       verificarUsuario()
     }
   }
@@ -63,6 +68,7 @@ function App() {
 
   function editarMaterial(material) {
     setEditandoId(material.id)
+
     setDescripcion(material.descripcion)
     setCantidad(material.cantidad)
     setMedida(material.medida)
@@ -86,7 +92,6 @@ function App() {
       if (error) {
         alert('Error al editar')
       } else {
-        alert('Material actualizado')
         limpiarFormulario()
         obtenerMateriales()
       }
@@ -109,14 +114,16 @@ function App() {
     if (error) {
       alert('Error al guardar')
     } else {
-      alert('Material agregado')
       limpiarFormulario()
       obtenerMateriales()
     }
   }
 
   async function eliminarMaterial(id) {
-    const confirmar = confirm('¿Eliminar material?')
+    const confirmar = confirm(
+      '¿Eliminar material?'
+    )
+
     if (!confirmar) return
 
     const { error } = await supabase
@@ -124,51 +131,60 @@ function App() {
       .delete()
       .eq('id', id)
 
-    if (error) {
-      alert('Error al eliminar')
-    } else {
+    if (!error) {
       obtenerMateriales()
     }
   }
 
   return (
     <div className="container">
-      <h1 className="titulo">Sistema de Stock</h1>
+      <h1 className="titulo">
+        Sistema de Stock
+      </h1>
 
       {!usuario ? (
         <div className="panel">
-          <h2>Login Administrador</h2>
+          <div className="login-fila">
 
-          <div className="formulario">
+            <h2 className="login-titulo">
+              Login Administrador
+            </h2>
+
             <input
-              className="input"
+              className="input login-input"
               type="email"
               placeholder="Correo"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
             />
 
             <input
-              className="input"
+              className="input login-input"
               type="password"
               placeholder="Contraseña"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
             />
 
             <button
-              className="boton boton-principal"
+              className="boton login-boton"
               onClick={iniciarSesion}
             >
               Iniciar Sesión
             </button>
+
           </div>
         </div>
       ) : (
         <>
           <div className="admin-bar">
             <span className="estado-admin">
-              Bienvenido Administrador (Conectado ✅)
+              Bienvenido Administrador
+              (Conectado ✅)
             </span>
 
             <button
@@ -181,56 +197,79 @@ function App() {
 
           <div className="panel">
             <h2>
-              {editandoId ? 'Editar Material' : 'Agregar Material'}
+              {editandoId
+                ? 'Editar Material'
+                : 'Agregar Material'}
             </h2>
 
             <div className="formulario">
+
               <input
                 className="input"
-                type="text"
                 placeholder="Descripción"
                 value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
+                onChange={(e) =>
+                  setDescripcion(
+                    e.target.value
+                  )
+                }
               />
 
               <input
                 className="input"
-                type="text"
                 placeholder="Cantidad"
                 value={cantidad}
-                onChange={(e) => setCantidad(e.target.value)}
+                onChange={(e) =>
+                  setCantidad(
+                    e.target.value
+                  )
+                }
               />
 
               <input
                 className="input"
-                type="text"
                 placeholder="Medida"
                 value={medida}
-                onChange={(e) => setMedida(e.target.value)}
+                onChange={(e) =>
+                  setMedida(
+                    e.target.value
+                  )
+                }
               />
 
               <input
                 className="input"
-                type="text"
                 placeholder="Espesor"
                 value={espesor}
-                onChange={(e) => setEspesor(e.target.value)}
+                onChange={(e) =>
+                  setEspesor(
+                    e.target.value
+                  )
+                }
               />
 
               <input
                 className="input"
-                type="text"
                 placeholder="Color"
                 value={color}
-                onChange={(e) => setColor(e.target.value)}
+                onChange={(e) =>
+                  setColor(
+                    e.target.value
+                  )
+                }
               />
 
               <button
                 className="boton boton-principal"
-                onClick={agregarMaterial}
+                onClick={
+                  agregarMaterial
+                }
               >
-                {editandoId ? 'Guardar Cambios' : 'Agregar Material'}
+                {editandoId
+                  ? 'Guardar Cambios'
+                  : 'Agregar Material'}
               </button>
+
             </div>
           </div>
         </>
@@ -244,40 +283,70 @@ function App() {
             <th>Medida</th>
             <th>Espesor</th>
             <th>Color</th>
-            {usuario && <th>Acciones</th>}
+
+            {usuario &&
+              <th>Acciones</th>}
           </tr>
         </thead>
 
         <tbody>
-          {materiales.map((material) => (
-            <tr key={material.id}>
-              <td>{material.descripcion}</td>
-              <td>{material.cantidad}</td>
-              <td>{material.medida}</td>
-              <td>{material.espesor}</td>
-              <td>{material.color}</td>
-
-              {usuario && (
+          {materiales.map(
+            (material) => (
+              <tr
+                key={material.id}
+              >
                 <td>
-                  <div className="acciones">
-                    <button
-                      className="boton editar"
-                      onClick={() => editarMaterial(material)}
-                    >
-                      Editar
-                    </button>
-
-                    <button
-                      className="boton eliminar"
-                      onClick={() => eliminarMaterial(material.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </div>
+                  {material.descripcion}
                 </td>
-              )}
-            </tr>
-          ))}
+
+                <td>
+                  {material.cantidad}
+                </td>
+
+                <td>
+                  {material.medida}
+                </td>
+
+                <td>
+                  {material.espesor}
+                </td>
+
+                <td>
+                  {material.color}
+                </td>
+
+                {usuario && (
+                  <td>
+                    <div className="acciones">
+
+                      <button
+                        className="boton editar"
+                        onClick={() =>
+                          editarMaterial(
+                            material
+                          )
+                        }
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        className="boton eliminar"
+                        onClick={() =>
+                          eliminarMaterial(
+                            material.id
+                          )
+                        }
+                      >
+                        Eliminar
+                      </button>
+
+                    </div>
+                  </td>
+                )}
+              </tr>
+            )
+          )}
         </tbody>
       </table>
     </div>
