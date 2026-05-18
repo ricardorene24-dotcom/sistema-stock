@@ -476,9 +476,10 @@ function App() {
                     <tr key={m.id}>
                       <td>{m.descripcion}</td>
                       <td>{m.color}</td>
+                     <td>{m.medida}</td>
+                     <td>{m.espesor}</td>
                       <td>{m.cantidad}</td>
-                      <td>{m.medida}</td>
-                      <td>{m.espesor}</td>
+                      
                       
                       <td>
                         {m.fecha_actualizacion
