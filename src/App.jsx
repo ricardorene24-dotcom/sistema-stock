@@ -51,7 +51,6 @@ function App() {
 
     setEmail('')
     setPassword('')
-
     setVista('inventario')
   }
 
@@ -215,27 +214,25 @@ function App() {
 
         <header className="topbar">
 
-          <div></div>
-
           <div className="top-right">
 
             {!usuario &&
-              vista !== 'login' && (
-                <>
-                  <button
-                    className="btn-login-top"
-                    onClick={() => setVista('login')}
-                  >
-                    Iniciar sesión
-                  </button>
+            vista !== 'login' && (
+              <>
+                <button
+                  className="btn-login-top"
+                  onClick={() => setVista('login')}
+                >
+                  Iniciar sesión
+                </button>
 
-                  <img
-                    src={logo}
-                    alt=""
-                    className="logo"
-                  />
-                </>
-              )}
+                <img
+                  src={logo}
+                  alt=""
+                  className="logo"
+                />
+              </>
+            )}
 
             {usuario && (
 
@@ -267,9 +264,7 @@ function App() {
         </header>
 
         {vista === 'login' && (
-
           <section className="login-page">
-
             <div className="login-card">
 
               <img
@@ -285,7 +280,7 @@ function App() {
                 type="email"
                 placeholder="Usuario"
                 value={email}
-                onChange={(e) =>
+                onChange={(e)=>
                   setEmail(e.target.value)
                 }
               />
@@ -294,7 +289,7 @@ function App() {
                 type="password"
                 placeholder="Contraseña"
                 value={password}
-                onChange={(e) =>
+                onChange={(e)=>
                   setPassword(e.target.value)
                 }
               />
@@ -306,84 +301,76 @@ function App() {
               </button>
 
             </div>
-
           </section>
-
         )}
 
-        {vista === 'nuevo' &&
-          usuario && (
-
-            <section className="card">
-
-              <h2>
-                Nuevo Producto
-              </h2>
-
-              <div className="form-grid">
-
-                <input
-                  placeholder="Descripción"
-                  value={descripcion}
-                  onChange={(e) =>
-                    setDescripcion(e.target.value)
-                  }
-                />
-
-                <input
-                  placeholder="Cantidad"
-                  value={cantidad}
-                  onChange={(e) =>
-                    setCantidad(e.target.value)
-                  }
-                />
-
-                <input
-                  placeholder="Medida"
-                  value={medida}
-                  onChange={(e) =>
-                    setMedida(e.target.value)
-                  }
-                />
-
-                <input
-                  placeholder="Espesor"
-                  value={espesor}
-                  onChange={(e) =>
-                    setEspesor(e.target.value)
-                  }
-                />
-
-                <input
-                  placeholder="Color"
-                  value={color}
-                  onChange={(e) =>
-                    setColor(e.target.value)
-                  }
-                />
-
-                <button
-                  className="btn-primary"
-                  onClick={guardarMaterial}
-                >
-                  {editandoId
-                    ? 'Guardar Cambios'
-                    : 'Agregar Producto'}
-                </button>
-
-              </div>
-
-            </section>
-
-          )}
-
-        {vista === 'inventario' && (
-
+        {vista === 'nuevo' && usuario && (
           <section className="card">
 
             <h2>
-              Inventario
+              Nuevo Producto
             </h2>
+
+            <div className="form-grid">
+
+              <input
+                placeholder="Descripción"
+                value={descripcion}
+                onChange={(e)=>
+                  setDescripcion(e.target.value)
+                }
+              />
+
+              <input
+                placeholder="Cantidad"
+                value={cantidad}
+                onChange={(e)=>
+                  setCantidad(e.target.value)
+                }
+              />
+
+              <input
+                placeholder="Medida"
+                value={medida}
+                onChange={(e)=>
+                  setMedida(e.target.value)
+                }
+              />
+
+              <input
+                placeholder="Espesor"
+                value={espesor}
+                onChange={(e)=>
+                  setEspesor(e.target.value)
+                }
+              />
+
+              <input
+                placeholder="Color"
+                value={color}
+                onChange={(e)=>
+                  setColor(e.target.value)
+                }
+              />
+
+              <button
+                className="btn-primary"
+                onClick={guardarMaterial}
+              >
+                {editandoId
+                  ? 'Guardar Cambios'
+                  : 'Agregar Producto'}
+              </button>
+
+            </div>
+
+          </section>
+        )}
+
+        {vista === 'inventario' && (
+          <section className="card">
+
+            <h2>Inventario</h2>
 
             <div className="tabla-scroll">
 
@@ -398,55 +385,51 @@ function App() {
                     <th>Color</th>
 
                     {usuario &&
-                      <th>Acciones</th>}
+                    <th>Acciones</th>}
                   </tr>
                 </thead>
 
                 <tbody>
 
-                  {materiales.map((m) => (
+                {materiales.map((m)=>(
+                  <tr key={m.id}>
 
-                    <tr key={m.id}>
+                    <td>{m.descripcion}</td>
+                    <td>{m.cantidad}</td>
+                    <td>{m.medida}</td>
+                    <td>{m.espesor}</td>
+                    <td>{m.color}</td>
 
-                      <td>{m.descripcion}</td>
-                      <td>{m.cantidad}</td>
-                      <td>{m.medida}</td>
-                      <td>{m.espesor}</td>
-                      <td>{m.color}</td>
+                    {usuario && (
+                    <td>
 
-                      {usuario && (
+                      <div className="acciones">
 
-                        <td>
+                        <button
+                          className="btn-edit"
+                          onClick={()=>
+                            editarMaterial(m)
+                          }
+                        >
+                          Editar
+                        </button>
 
-                          <div className="acciones">
+                        <button
+                          className="btn-delete"
+                          onClick={()=>
+                            eliminarMaterial(m.id)
+                          }
+                        >
+                          Eliminar
+                        </button>
 
-                            <button
-                              className="btn-edit"
-                              onClick={() =>
-                                editarMaterial(m)
-                              }
-                            >
-                              Editar
-                            </button>
+                      </div>
 
-                            <button
-                              className="btn-delete"
-                              onClick={() =>
-                                eliminarMaterial(m.id)
-                              }
-                            >
-                              Eliminar
-                            </button>
+                    </td>
+                    )}
 
-                          </div>
-
-                        </td>
-
-                      )}
-
-                    </tr>
-
-                  ))}
+                  </tr>
+                ))}
 
                 </tbody>
 
@@ -455,7 +438,30 @@ function App() {
             </div>
 
           </section>
+        )}
 
+        {vista === 'movimientos' && usuario && (
+          <section className="card">
+
+            <h2>Movimientos</h2>
+
+            <p>
+              Próximamente...
+            </p>
+
+          </section>
+        )}
+
+        {vista === 'reportes' && usuario && (
+          <section className="card">
+
+            <h2>Reportes</h2>
+
+            <p>
+              Próximamente...
+            </p>
+
+          </section>
         )}
 
       </main>
