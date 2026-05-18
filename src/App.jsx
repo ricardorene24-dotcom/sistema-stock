@@ -100,6 +100,21 @@ function App() {
       return
     }
 
+    const materialExiste = materiales.find(
+      (m) =>
+        m.descripcion.trim().toLowerCase() === descripcion.trim().toLowerCase() &&
+        m.medida.trim().toLowerCase() === medida.trim().toLowerCase() &&
+        m.espesor.trim().toLowerCase() === espesor.trim().toLowerCase() &&
+        m.color.trim().toLowerCase() === color.trim().toLowerCase()
+    )
+
+    if (materialExiste && !editandoId) {
+      alert(
+        'Este material ya existe. Ve a Inventario y edita la cantidad.'
+      )
+      return
+    }
+
     if (editandoId) {
       await supabase
         .from('materiales')
