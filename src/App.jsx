@@ -461,10 +461,11 @@ function App() {
                 <thead>
                   <tr>
                     <th>Descripción</th>
-                    <th>Cantidad</th>
+                    <th>Color</th>
                     <th>Medida</th>
                     <th>Espesor</th>
-                    <th>Color</th>
+                    <th>Cantidad</th>
+                    
                     <th>Fecha actualización</th>
                     {usuario && <th>Acciones</th>}
                   </tr>
@@ -474,10 +475,11 @@ function App() {
                   {materialesFiltrados.map((m) => (
                     <tr key={m.id}>
                       <td>{m.descripcion}</td>
+                      <td>{m.color}</td>
                       <td>{m.cantidad}</td>
                       <td>{m.medida}</td>
                       <td>{m.espesor}</td>
-                      <td>{m.color}</td>
+                      
                       <td>
                         {m.fecha_actualizacion
                           ? new Date(m.fecha_actualizacion).toLocaleString()
@@ -579,9 +581,10 @@ function App() {
                   {movimientos.map((mov) => (
                     <tr key={mov.id}>
                       <td>{mov.descripcion}</td>
+                      <td>{mov.color}</td>
                       <td>{mov.espesor}</td>
                       <td>{mov.medida}</td>
-                      <td>{mov.color}</td>
+                      
                       <td>
                         {mov.fecha
                           ? new Date(mov.fecha).toLocaleString()
