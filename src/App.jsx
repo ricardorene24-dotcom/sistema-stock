@@ -512,16 +512,9 @@ function App() {
                         <td>
                           <div className="acciones">
                             <button
-                              className="btn-edit"
-                              onClick={() => editarMaterial(m)}
-                            >
-                              Editar
-                            </button>
-
-                            <button
                               className="btn-delete"
                               onClick={() =>
-                                eliminarMaterial(m.id)
+                                eliminarMaterial(material.id)
                               }
                             >
                               Eliminar

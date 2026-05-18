@@ -117,8 +117,8 @@ body{
 }
 
 .form-grid input,
-.form-grid select,
 .filtros select{
+  width:220px;
   border:none;
   border-radius:10px;
   padding:14px;
@@ -126,8 +126,12 @@ body{
   color:white;
 }
 
+
 .filtros{
+  display:flex;
+  justify-content:flex-start;
   margin-bottom:20px;
+  margin-left:20px;
 }
 
 .tabla-scroll{
@@ -243,4 +247,4 @@ font-size:13px;
 padding:12px;
 }
 
-}
+} 
