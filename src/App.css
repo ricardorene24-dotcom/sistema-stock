@@ -1,14 +1,14 @@
-body{
+*{
   margin:0;
   padding:0;
+  box-sizing:border-box;
+}
+
+body{
   background:#021542;
   color:white;
   font-family:Arial,sans-serif;
   overflow-x:hidden;
-}
-
-*{
-  box-sizing:border-box;
 }
 
 #root{
@@ -21,6 +21,8 @@ body{
   width:100%;
   min-height:100vh;
 }
+
+/* SIDEBAR */
 
 .sidebar{
   width:230px;
@@ -44,11 +46,11 @@ body{
 }
 
 .menu button{
-  border:none;
-  border-radius:12px;
-  padding:16px;
   background:#2b4f92;
+  border:none;
   color:white;
+  padding:16px;
+  border-radius:12px;
   cursor:pointer;
   font-size:16px;
   transition:.3s;
@@ -60,23 +62,21 @@ body{
 
 .menu button.activo{
   background:#3567d8;
-  box-shadow:0 0 15px rgba(53,103,216,.5);
+  box-shadow:0 0 18px rgba(53,103,216,.5);
 }
+
+/* CONTENIDO */
 
 .contenido{
   flex:1;
   width:100%;
   padding:20px;
-  border:none;
-  margin:0;
 }
 
 .topbar{
   display:flex;
   justify-content:flex-end;
-  align-items:center;
   margin-bottom:20px;
-  border:none;
 }
 
 .top-right{
@@ -95,20 +95,39 @@ body{
   width:70px;
 }
 
+.btn-login-top,
+.btn-logout,
+.btn-primary{
+  background:#3567d8;
+  color:white;
+  border:none;
+  padding:13px 18px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.btn-login-top:hover,
+.btn-logout:hover,
+.btn-primary:hover{
+  background:#4976df;
+}
+
+/* CARD */
+
 .card{
   width:100%;
   background:rgba(0,0,0,.22);
-  border:none;
-  border-radius:28px;
+  border-radius:30px;
   padding:30px;
   box-shadow:0 8px 30px rgba(0,0,0,.25);
-  overflow:hidden;
 }
 
 .card h2{
   text-align:center;
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
+
+/* FORMULARIOS */
 
 .form-grid{
   display:grid;
@@ -117,33 +136,44 @@ body{
 }
 
 .form-grid input,
-.filtros select{
-  width:220px;
+.form-grid select{
   border:none;
-  border-radius:10px;
-  padding:14px;
   background:#34435d;
   color:white;
+  padding:15px;
+  border-radius:12px;
 }
 
+.form-grid input::placeholder{
+  color:#d9d9d9;
+}
+
+/* FILTROS */
 
 .filtros{
   display:flex;
   justify-content:flex-start;
   margin-bottom:20px;
-  margin-left:20px;
 }
 
-.tabla-scroll{
-  width:100%;
-  overflow-x:auto;
+.filtros select{
+  width:220px;
+  background:#34435d;
+  color:white;
   border:none;
+  border-radius:14px;
+  padding:15px;
+}
+
+/* TABLAS */
+
+.tabla-scroll{
+  overflow-x:auto;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  border:none;
 }
 
 thead{
@@ -157,7 +187,7 @@ th{
 td{
   text-align:center;
   padding:22px 15px;
-  border-top:1px solid rgba(255,255,255,.10);
+  border-top:1px solid rgba(255,255,255,.08);
 }
 
 .acciones{
@@ -166,55 +196,121 @@ td{
   gap:10px;
 }
 
-.btn-edit{
-  background:orange;
-  color:white;
-  border:none;
-  border-radius:8px;
-  padding:10px 15px;
-}
-
 .btn-delete{
-  background:#ff4d4d;
-  color:white;
+  background:#ff5252;
   border:none;
+  color:white;
+  padding:10px 16px;
   border-radius:8px;
-  padding:10px 15px;
-}
-
-.btn-primary,
-.btn-login-top,
-.btn-logout{
-  background:#3567d8;
-  color:white;
-  border:none;
-  border-radius:10px;
-  padding:14px 18px;
   cursor:pointer;
 }
+
+.btn-delete:hover{
+  background:#ff3131;
+}
+
+/* LOGIN GRANDE */
 
 .login-page{
   display:flex;
   justify-content:center;
-  margin-top:30px;
+  margin-top:40px;
 }
 
 .login-card{
-  width:340px;
-  background:rgba(0,0,0,.25);
-  padding:35px;
+  width:450px;
+  background:rgba(0,0,0,.28);
+  padding:50px;
   border-radius:25px;
   text-align:center;
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
 }
 
 .login-logo{
-  width:120px;
-  margin-bottom:15px;
+  width:160px;
+  margin-bottom:20px;
+}
+
+.login-card h2{
+  font-size:36px;
+  margin-bottom:30px;
 }
 
 .login-card input{
   width:100%;
-  margin-bottom:15px;
+  padding:18px;
+  margin-bottom:20px;
+  border:none;
+  border-radius:12px;
+  background:#34435d;
+  color:white;
+  font-size:18px;
+}
+
+.login-card button{
+  width:100%;
+  padding:18px;
+  font-size:18px;
+  background:#3567d8;
+  color:white;
+  border:none;
+  border-radius:12px;
+}
+
+.login-card button:hover{
+  background:#4976df;
+}
+
+/* MOVIMIENTOS */
+
+.movimientos-form{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(120px,1fr));
+  gap:16px;
+  margin-bottom:25px;
+  align-items:center;
+}
+
+.movimientos-form input,
+.movimientos-form select{
+  width:100%;
+  background:#34435d;
+  color:white;
+  border:none;
+  padding:15px;
+  border-radius:14px;
+  font-size:14px;
+}
+
+.movimientos-form select{
+  cursor:pointer;
+}
+
+.movimientos-form select option{
+  background:#34435d;
+}
+
+.movimientos-form button{
+  height:52px;
+  border:none;
+  border-radius:14px;
+  background:#3567d8;
+  color:white;
+  cursor:pointer;
+}
+
+.movimientos-form button:hover{
+  background:#4a79e5;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+.movimientos-form{
+grid-template-columns:repeat(2,1fr);
+}
+
 }
 
 @media(max-width:900px){
@@ -226,10 +322,6 @@ flex-direction:column;
 .sidebar{
 width:100%;
 min-width:100%;
-}
-
-.contenido{
-padding:15px;
 }
 
 .usuario-box{
@@ -247,4 +339,17 @@ font-size:13px;
 padding:12px;
 }
 
-} 
+}
+
+@media(max-width:700px){
+
+.movimientos-form{
+grid-template-columns:1fr;
+}
+
+.login-card{
+width:95%;
+padding:30px;
+}
+
+}

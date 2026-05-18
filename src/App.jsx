@@ -226,9 +226,7 @@ function App() {
 
     if (movTipo === 'Salida') {
       if (cantidadMovimiento > stockActual) {
-        alert(
-          `Stock insuficiente. Stock actual: ${stockActual}`
-        )
+        alert(`Stock insuficiente. Stock actual: ${stockActual}`)
         return
       }
 
@@ -287,19 +285,13 @@ function App() {
   }
 
   const listaMateriales = [
-    ...new Set(
-      materiales.map((m) =>
-        normalizar(m.descripcion)
-      )
-    ),
+    ...new Set(materiales.map((m) => normalizar(m.descripcion))),
   ]
 
   const materialesFiltrados =
     filtroMaterial === 'todos'
       ? materiales
-      : materiales.filter(
-          (m) => normalizar(m.descripcion) === filtroMaterial
-        )
+      : materiales.filter((m) => normalizar(m.descripcion) === filtroMaterial)
 
   return (
     <div className="layout">
@@ -367,10 +359,7 @@ function App() {
               <div className="usuario-box">
                 <span>Bienvenido Ricardo ✅</span>
 
-                <button
-                  className="btn-logout"
-                  onClick={cerrarSesion}
-                >
+                <button className="btn-logout" onClick={cerrarSesion}>
                   Cerrar sesión
                 </button>
 
@@ -401,9 +390,7 @@ function App() {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <button onClick={iniciarSesion}>
-                Iniciar sesión
-              </button>
+              <button onClick={iniciarSesion}>Iniciar sesión</button>
             </div>
           </section>
         )}
@@ -412,7 +399,7 @@ function App() {
           <section className="card">
             <h2>Nuevo Producto</h2>
 
-            <div className="form-grid">
+            <div className="movimientos-form">
               <input
                 placeholder="Descripción"
                 value={descripcion}
@@ -443,13 +430,8 @@ function App() {
                 onChange={(e) => setColor(e.target.value)}
               />
 
-              <button
-                className="btn-primary"
-                onClick={guardarMaterial}
-              >
-                {editandoId
-                  ? 'Guardar Cambios'
-                  : 'Agregar Producto'}
+              <button className="btn-primary" onClick={guardarMaterial}>
+                {editandoId ? 'Guardar Cambios' : 'Agregar Producto'}
               </button>
             </div>
           </section>
@@ -459,16 +441,12 @@ function App() {
           <section className="card">
             <h2>Inventario</h2>
 
-            <div className="filtros">
+            <div className="filtros izquierda">
               <select
                 value={filtroMaterial}
-                onChange={(e) =>
-                  setFiltroMaterial(e.target.value)
-                }
+                onChange={(e) => setFiltroMaterial(e.target.value)}
               >
-                <option value="todos">
-                  Todos los materiales
-                </option>
+                <option value="todos">Todos los materiales</option>
 
                 {listaMateriales.map((material) => (
                   <option key={material} value={material}>
@@ -502,9 +480,7 @@ function App() {
                       <td>{m.color}</td>
                       <td>
                         {m.fecha_actualizacion
-                          ? new Date(
-                              m.fecha_actualizacion
-                            ).toLocaleString()
+                          ? new Date(m.fecha_actualizacion).toLocaleString()
                           : 'Sin fecha'}
                       </td>
 
@@ -513,9 +489,7 @@ function App() {
                           <div className="acciones">
                             <button
                               className="btn-delete"
-                              onClick={() =>
-                                eliminarMaterial(material.id)
-                              }
+                              onClick={() => eliminarMaterial(m.id)}
                             >
                               Eliminar
                             </button>
@@ -534,13 +508,11 @@ function App() {
           <section className="card">
             <h2>Movimientos</h2>
 
-            <div className="form-grid">
+            <div className="movimientos-form">
               <input
                 placeholder="Nombre del producto"
                 value={movDescripcion}
-                onChange={(e) =>
-                  setMovDescripcion(e.target.value)
-                }
+                onChange={(e) => setMovDescripcion(e.target.value)}
               />
 
               <input
@@ -578,15 +550,10 @@ function App() {
               <input
                 placeholder="Observación"
                 value={movObservacion}
-                onChange={(e) =>
-                  setMovObservacion(e.target.value)
-                }
+                onChange={(e) => setMovObservacion(e.target.value)}
               />
 
-              <button
-                className="btn-primary"
-                onClick={registrarMovimiento}
-              >
+              <button className="btn-primary" onClick={registrarMovimiento}>
                 Registrar Movimiento
               </button>
             </div>
