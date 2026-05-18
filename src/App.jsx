@@ -5,6 +5,7 @@ import logo from './assets/Logo Cesart.png'
 
 function App() {
   const [vista, setVista] = useState('inventario')
+
   const [materiales, setMateriales] = useState([])
   const [movimientos, setMovimientos] = useState([])
 
@@ -19,7 +20,8 @@ function App() {
   const [usuario, setUsuario] = useState(null)
 
   const [editandoId, setEditandoId] = useState(null)
-  const [cantidadOriginal, setCantidadOriginal] = useState(null)
+  const [cantidadOriginal, setCantidadOriginal] =
+    useState(null)
 
   useEffect(() => {
     obtenerMateriales()
@@ -36,10 +38,11 @@ function App() {
   }
 
   async function iniciarSesion() {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
     if (error) {
       alert('Credenciales incorrectas')
@@ -47,14 +50,18 @@ function App() {
     }
 
     await verificarUsuario()
-    setVista('inventario')
+
     setEmail('')
     setPassword('')
+
+    setVista('inventario')
   }
 
   async function cerrarSesion() {
     await supabase.auth.signOut()
+
     setUsuario(null)
+
     setVista('inventario')
   }
 
@@ -62,18 +69,24 @@ function App() {
     const { data, error } = await supabase
       .from('materiales')
       .select('*')
-      .order('id', { ascending: false })
+      .order('id', {
+        ascending: false,
+      })
 
-    if (!error) setMateriales(data)
+    if (!error)
+      setMateriales(data)
   }
 
   async function obtenerMovimientos() {
     const { data, error } = await supabase
       .from('movimientos')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('created_at', {
+        ascending: false,
+      })
 
-    if (!error) setMovimientos(data)
+    if (!error)
+      setMovimientos(data)
   }
 
   function limpiarFormulario() {
@@ -82,366 +95,657 @@ function App() {
     setMedida('')
     setEspesor('')
     setColor('')
+
     setEditandoId(null)
     setCantidadOriginal(null)
   }
 
   function editarMaterial(material) {
     setEditandoId(material.id)
-    setCantidadOriginal(Number(material.cantidad))
 
-    setDescripcion(material.descripcion)
+    setCantidadOriginal(
+      Number(material.cantidad)
+    )
+
+    setDescripcion(
+      material.descripcion
+    )
+
     setCantidad(material.cantidad)
+
     setMedida(material.medida)
+
     setEspesor(material.espesor)
+
     setColor(material.color)
 
     setVista('nuevo')
   }
 
   async function guardarMaterial() {
+
     if (!usuario) {
-      alert('Debes iniciar sesión')
+      alert(
+        'Debes iniciar sesión'
+      )
       return
     }
 
-    if (!descripcion || !cantidad) {
-      alert('Completa descripción y cantidad')
+    if (
+      !descripcion ||
+      !cantidad
+    ) {
+      alert(
+        'Completa descripción y cantidad'
+      )
       return
     }
 
     if (editandoId) {
-      const nuevaCantidad = Number(cantidad)
 
-      const { error } = await supabase
-        .from('materiales')
-        .update({
-          descripcion,
-          cantidad: nuevaCantidad,
-          medida,
-          espesor,
-          color,
-        })
-        .eq('id', editandoId)
+      const nuevaCantidad =
+        Number(cantidad)
+
+      const { error } =
+        await supabase
+          .from(
+            'materiales'
+          )
+          .update({
+            descripcion,
+            cantidad:
+              nuevaCantidad,
+            medida,
+            espesor,
+            color,
+          })
+          .eq(
+            'id',
+            editandoId
+          )
 
       if (error) {
-        alert('Error al actualizar')
+        alert(
+          'Error al actualizar'
+        )
         return
       }
 
-      if (cantidadOriginal !== nuevaCantidad) {
-        const observacion = prompt(
-          'Escribe una observación del movimiento'
-        )
+      limpiarFormulario()
 
-        await supabase.from('movimientos').insert([
+      obtenerMateriales()
+
+      setVista(
+        'inventario'
+      )
+
+      return
+    }
+
+    const { error } =
+      await supabase
+        .from(
+          'materiales'
+        )
+        .insert([
           {
-            material: descripcion,
-            cantidad_anterior: cantidadOriginal,
-            cantidad_nueva: nuevaCantidad,
-            diferencia: nuevaCantidad - cantidadOriginal,
-            observacion: observacion || 'Sin observación',
+            descripcion,
+            cantidad,
+            medida,
+            espesor,
+            color,
           },
         ])
-      }
+
+    if (!error) {
 
       limpiarFormulario()
+
       obtenerMateriales()
-      obtenerMovimientos()
-      setVista('inventario')
-      return
+
+      setVista(
+        'inventario'
+      )
     }
-
-    const { error } = await supabase.from('materiales').insert([
-      {
-        descripcion,
-        cantidad: Number(cantidad),
-        medida,
-        espesor,
-        color,
-      },
-    ])
-
-    if (error) {
-      alert('Error al guardar')
-      return
-    }
-
-    await supabase.from('movimientos').insert([
-      {
-        material: descripcion,
-        cantidad_anterior: 0,
-        cantidad_nueva: Number(cantidad),
-        diferencia: Number(cantidad),
-        observacion: 'Nuevo producto agregado',
-      },
-    ])
-
-    limpiarFormulario()
-    obtenerMateriales()
-    obtenerMovimientos()
-    setVista('inventario')
   }
 
-  async function eliminarMaterial(id) {
-    if (!usuario) {
-      alert('Debes iniciar sesión')
+  async function eliminarMaterial(id){
+
+    if(!usuario)return
+
+    const confirmar=
+      confirm(
+      '¿Eliminar material?'
+    )
+
+    if(!confirmar)
       return
-    }
 
-    const confirmar = confirm('¿Eliminar material?')
-    if (!confirmar) return
-
-    const { error } = await supabase
-      .from('materiales')
+    const {error}=
+      await supabase
+      .from(
+        'materiales'
+      )
       .delete()
-      .eq('id', id)
+      .eq('id',id)
 
-    if (!error) obtenerMateriales()
-  }
-
-  function irVistaProtegida(nombreVista) {
-    if (!usuario) {
-      setVista('login')
-      return
-    }
-
-    setVista(nombreVista)
+    if(!error)
+      obtenerMateriales()
   }
 
   return (
-    <div className="layout">
-      <aside className="sidebar">
-        <div className="brand">
-          CESART
-          <br />
-          SYSTEM
-        </div>
 
-        <nav className="menu">
-          {usuario && (
-            <button onClick={() => setVista('nuevo')}>
-              Nuevo Producto
-            </button>
-          )}
+<div className="layout">
 
-          <button onClick={() => setVista('inventario')}>
-            Inventario
-          </button>
+<aside className="sidebar">
 
-          {usuario && (
-            <button onClick={() => setVista('movimientos')}>
-              Movimientos
-            </button>
-          )}
+<div className="brand">
 
-          {usuario && (
-            <button onClick={() => setVista('reportes')}>
-              Reportes
-            </button>
-          )}
-        </nav>
-      </aside>
+CESART
+<br/>
+SYSTEM
 
-      <main className="contenido">
-        <header className="topbar">
-          <div>
-            <h1>Sistema de Stock Cesart</h1>
-            <p>Control de Inventario</p>
-          </div>
+</div>
 
-          <div className="top-right">
-            <img src={logo} alt="Logo Cesart" className="logo" />
+<nav className="menu">
 
-            {!usuario ? (
-              <button
-                className="btn-login-top"
-                onClick={() => setVista('login')}
-              >
-                Iniciar sesión
-              </button>
-            ) : (
-              <div className="usuario-box">
-                <span>Bienvenido Ricardo ✅</span>
+{usuario && (
+<button
+onClick={()=>
+setVista(
+'nuevo'
+)
+}
+>
+Nuevo Producto
+</button>
+)}
 
-                <button
-                  className="btn-logout"
-                  onClick={cerrarSesion}
-                >
-                  Cerrar sesión
-                </button>
-              </div>
-            )}
-          </div>
-        </header>
+<button
+onClick={()=>
+setVista(
+'inventario'
+)
+}
+>
+Inventario
+</button>
 
-        {vista === 'login' && (
-          <section className="login-page">
-            <div className="login-card">
-              <img src={logo} alt="Logo Cesart" className="login-logo" />
+{usuario && (
+<button
+onClick={()=>
+setVista(
+'movimientos'
+)
+}
+>
+Movimientos
+</button>
+)}
 
-              <h2>Iniciar sesión</h2>
+{usuario && (
+<button
+onClick={()=>
+setVista(
+'reportes'
+)
+}
+>
+Reportes
+</button>
+)}
 
-              <input
-                type="email"
-                placeholder="Usuario"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+</nav>
 
-              <input
-                type="password"
-                placeholder="Contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+</aside>
 
-              <button onClick={iniciarSesion}>
-                Iniciar sesión
-              </button>
-            </div>
-          </section>
-        )}
+<main className="contenido">
 
-        {vista === 'nuevo' && usuario && (
-          <section className="card">
-            <h2>{editandoId ? 'Editar Producto' : 'Nuevo Producto'}</h2>
+<header className="topbar">
 
-            <div className="form-grid">
-              <input
-                placeholder="Descripción"
-                value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
-              />
+<div>
 
-              <input
-                placeholder="Cantidad"
-                value={cantidad}
-                onChange={(e) => setCantidad(e.target.value)}
-              />
+<h1>
+Sistema de Stock Cesart
+</h1>
 
-              <input
-                placeholder="Medida"
-                value={medida}
-                onChange={(e) => setMedida(e.target.value)}
-              />
+<p>
+Control de Inventario
+</p>
 
-              <input
-                placeholder="Espesor"
-                value={espesor}
-                onChange={(e) => setEspesor(e.target.value)}
-              />
+</div>
 
-              <input
-                placeholder="Color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-              />
+<div className="top-right">
 
-              <button className="btn-primary" onClick={guardarMaterial}>
-                {editandoId ? 'Guardar Cambios' : 'Agregar Producto'}
-              </button>
-            </div>
-          </section>
-        )}
+{!usuario &&
+vista !==
+'login' && (
 
-        {vista === 'inventario' && (
-          <section className="card">
-            <h2>Inventario</h2>
+<>
 
-            <div className="tabla-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Descripción</th>
-                    <th>Cantidad</th>
-                    <th>Medida</th>
-                    <th>Espesor</th>
-                    <th>Color</th>
+<img
+src={logo}
+alt="logo"
+className="logo"
+/>
 
-                    {usuario && <th>Acciones</th>}
-                  </tr>
-                </thead>
+<button
+className="
+btn-login-top"
+onClick={()=>
+setVista(
+'login'
+)
+}
+>
+Iniciar sesión
+</button>
 
-                <tbody>
-                  {materiales.map((m) => (
-                    <tr key={m.id}>
-                      <td>{m.descripcion}</td>
-                      <td>{m.cantidad}</td>
-                      <td>{m.medida}</td>
-                      <td>{m.espesor}</td>
-                      <td>{m.color}</td>
+</>
 
-                      {usuario && (
-                        <td>
-                          <div className="acciones">
-                            <button
-                              className="btn-edit"
-                              onClick={() => editarMaterial(m)}
-                            >
-                              Editar
-                            </button>
+)}
 
-                            <button
-                              className="btn-delete"
-                              onClick={() => eliminarMaterial(m.id)}
-                            >
-                              Eliminar
-                            </button>
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
+{usuario && (
 
-        {vista === 'movimientos' && usuario && (
-          <section className="card">
-            <h2>Movimientos</h2>
+<>
 
-            <div className="tabla-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Material</th>
-                    <th>Antes</th>
-                    <th>Ahora</th>
-                    <th>Diferencia</th>
-                    <th>Observación</th>
-                  </tr>
-                </thead>
+<img
+src={logo}
+alt="logo"
+className="logo"
+/>
 
-                <tbody>
-                  {movimientos.map((mov) => (
-                    <tr key={mov.id}>
-                      <td>{new Date(mov.created_at).toLocaleString()}</td>
-                      <td>{mov.material}</td>
-                      <td>{mov.cantidad_anterior}</td>
-                      <td>{mov.cantidad_nueva}</td>
-                      <td>{mov.diferencia}</td>
-                      <td>{mov.observacion}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
+<div
+className="
+usuario-box"
+>
 
-        {vista === 'reportes' && usuario && (
-          <section className="card">
-            <h2>Reportes</h2>
-            <p>Próximamente...</p>
-          </section>
-        )}
-      </main>
-    </div>
-  )
+<span>
+
+Bienvenido
+Ricardo ✅
+
+</span>
+
+<button
+className="
+btn-logout"
+onClick={
+cerrarSesion
+}
+>
+
+Cerrar sesión
+
+</button>
+
+</div>
+
+</>
+
+)}
+
+</div>
+
+</header>
+
+{vista ===
+'login' && (
+
+<section
+className="
+login-page"
+>
+
+<div
+className="
+login-card"
+>
+
+<img
+src={logo}
+alt="logo"
+className="
+login-logo"
+/>
+
+<h2>
+Iniciar sesión
+</h2>
+
+<input
+type="email"
+placeholder="
+Usuario"
+value={email}
+onChange={
+(e)=>
+setEmail(
+e.target
+.value
+)
+}
+/>
+
+<input
+type="password"
+placeholder="
+Contraseña"
+value={
+password
+}
+onChange={
+(e)=>
+setPassword(
+e.target
+.value
+)
+}
+/>
+
+<button
+onClick={
+iniciarSesion
+}
+>
+
+Iniciar sesión
+
+</button>
+
+</div>
+
+</section>
+
+)}
+
+{vista ===
+'nuevo' &&
+usuario && (
+
+<section
+className=
+"card"
+>
+
+<h2>
+Nuevo Producto
+</h2>
+
+<div
+className=
+"form-grid"
+>
+
+<input
+placeholder="Descripción"
+value={
+descripcion
+}
+onChange={
+(e)=>
+setDescripcion(
+e.target
+.value
+)
+}
+/>
+
+<input
+placeholder="Cantidad"
+value={
+cantidad
+}
+onChange={
+(e)=>
+setCantidad(
+e.target
+.value
+)
+}
+/>
+
+<input
+placeholder="Medida"
+value={
+medida
+}
+onChange={
+(e)=>
+setMedida(
+e.target
+.value
+)
+}
+/>
+
+<input
+placeholder="Espesor"
+value={
+espesor
+}
+onChange={
+(e)=>
+setEspesor(
+e.target
+.value
+)
+}
+/>
+
+<input
+placeholder="Color"
+value={
+color
+}
+onChange={
+(e)=>
+setColor(
+e.target
+.value
+)
+}
+/>
+
+<button
+className="
+btn-primary"
+onClick={
+guardarMaterial
+}
+>
+
+{editandoId
+?
+'Guardar Cambios'
+:
+'Agregar Producto'
+}
+
+</button>
+
+</div>
+
+</section>
+
+)}
+
+{vista===
+'inventario'&&(
+
+<section
+className=
+"card"
+>
+
+<h2>
+Inventario
+</h2>
+
+<div
+className="
+tabla-scroll"
+>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Descripción
+</th>
+
+<th>
+Cantidad
+</th>
+
+<th>
+Medida
+</th>
+
+<th>
+Espesor
+</th>
+
+<th>
+Color
+</th>
+
+{usuario &&
+<th>
+Acciones
+</th>}
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{
+materiales.map(
+(m)=>(
+<tr
+key={m.id}
+>
+
+<td>
+{m.descripcion}
+</td>
+
+<td>
+{m.cantidad}
+</td>
+
+<td>
+{m.medida}
+</td>
+
+<td>
+{m.espesor}
+</td>
+
+<td>
+{m.color}
+</td>
+
+{usuario&&(
+
+<td>
+
+<div
+className="
+acciones"
+>
+
+<button
+className="
+btn-edit"
+onClick=
+{()=>editarMaterial(m)}
+>
+
+Editar
+
+</button>
+
+<button
+className="
+btn-delete"
+onClick=
+{()=>eliminarMaterial(m.id)}
+>
+
+Eliminar
+
+</button>
+
+</div>
+
+</td>
+
+)}
+
+</tr>
+))
+}
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+)}
+
+{vista===
+'movimientos'
+&&usuario&&(
+
+<section
+className=
+"card"
+>
+
+<h2>
+Movimientos
+</h2>
+
+Próximamente
+
+</section>
+
+)}
+
+{vista===
+'reportes'
+&&usuario&&(
+
+<section
+className=
+"card"
+>
+
+<h2>
+Reportes
+</h2>
+
+Próximamente
+
+</section>
+
+)}
+
+</main>
+
+</div>
+
+)
+
 }
 
 export default App

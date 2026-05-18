@@ -15,6 +15,7 @@ min-height:100%;
 body{
 background:#071633;
 color:white;
+overflow-x:hidden;
 }
 
 /* LAYOUT */
@@ -25,13 +26,14 @@ min-height:100vh;
 width:100%;
 }
 
-/* SIDEBAR */
+/* MENU */
 
 .sidebar{
 width:230px;
 background:#12315c;
-padding:25px;
+padding:22px;
 min-height:100vh;
+flex-shrink:0;
 }
 
 .brand{
@@ -51,16 +53,17 @@ gap:15px;
 .menu button{
 padding:15px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 background:#244a86;
 color:white;
-font-size:16px;
 cursor:pointer;
+font-size:16px;
 transition:.3s;
 }
 
 .menu button:hover{
 background:#2563eb;
+transform:translateY(-2px);
 }
 
 /* CONTENIDO */
@@ -73,56 +76,49 @@ padding:30px;
 .topbar{
 display:flex;
 justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
+align-items:flex-start;
+margin-bottom:35px;
 }
 
 .topbar h1{
-font-size:40px;
-margin-bottom:5px;
+font-size:58px;
+font-weight:bold;
 }
 
 .topbar p{
 color:#94a3b8;
+font-size:24px;
+margin-top:5px;
 }
+
+/* DERECHA SUPERIOR */
 
 .top-right{
 display:flex;
 align-items:center;
-gap:14px;
-justify-content:flex-end;
+gap:16px;
 }
 
 .logo{
 width:95px;
-order:1;
 }
 
 .usuario-box{
 display:flex;
 align-items:center;
 gap:12px;
-order:2;
-}
-
-.btn-login-top{
-order:2;
-}
-
-.usuario-box{
-display:flex;
-align-items:center;
-gap:12px;
+font-size:20px;
 }
 
 .btn-login-top,
 .btn-logout{
-padding:10px 16px;
+padding:12px 18px;
 border:none;
 border-radius:10px;
 background:#2563eb;
 color:white;
 cursor:pointer;
+transition:.3s;
 }
 
 .btn-login-top:hover,
@@ -130,37 +126,39 @@ cursor:pointer;
 background:#1d4ed8;
 }
 
-/* LOGIN PAGE */
+/* LOGIN */
 
 .login-page{
 display:flex;
 justify-content:center;
 align-items:center;
-padding-top:50px;
+padding-top:30px;
 }
 
 .login-card{
+width:350px;
 background:#111827;
-width:400px;
 padding:40px;
 border-radius:20px;
 display:flex;
 flex-direction:column;
 gap:15px;
-box-shadow:0 8px 25px rgba(0,0,0,.4);
+box-shadow:
+0 10px 30px rgba(0,0,0,.4);
 }
 
 .login-logo{
-width:180px;
+width:140px;
 margin:auto;
 }
 
 .login-card h2{
 text-align:center;
+margin-bottom:10px;
 }
 
 .login-card input{
-padding:15px;
+padding:14px;
 border:none;
 border-radius:10px;
 background:#334155;
@@ -182,8 +180,8 @@ cursor:pointer;
 background:#111827;
 padding:30px;
 border-radius:20px;
-margin-bottom:30px;
-box-shadow:0 8px 25px rgba(0,0,0,.35);
+box-shadow:
+0 8px 25px rgba(0,0,0,.35);
 }
 
 .card h2{
@@ -191,11 +189,12 @@ text-align:center;
 margin-bottom:25px;
 }
 
-/* FORM */
+/* FORMULARIO */
 
 .form-grid{
 display:grid;
-grid-template-columns:repeat(5,1fr);
+grid-template-columns:
+repeat(5,1fr);
 gap:15px;
 }
 
@@ -209,7 +208,7 @@ color:white;
 
 .btn-primary{
 grid-column:span 5;
-padding:15px;
+padding:16px;
 border:none;
 border-radius:10px;
 background:#2563eb;
@@ -217,7 +216,7 @@ color:white;
 cursor:pointer;
 }
 
-/* TABLA */
+/* TABLAS */
 
 .tabla-scroll{
 overflow-x:auto;
@@ -234,12 +233,15 @@ overflow:hidden;
 th{
 background:#1e293b;
 padding:16px;
+font-size:24px;
 }
 
 td{
-padding:16px;
+padding:18px;
 text-align:center;
-border-top:1px solid #334155;
+border-top:
+1px solid #334155;
+font-size:22px;
 }
 
 .acciones{
@@ -251,19 +253,19 @@ gap:10px;
 .btn-edit{
 background:#f59e0b;
 border:none;
-padding:8px 12px;
+padding:10px 16px;
 border-radius:8px;
-color:white;
 cursor:pointer;
+color:white;
 }
 
 .btn-delete{
 background:#ef4444;
 border:none;
-padding:8px 12px;
+padding:10px 16px;
 border-radius:8px;
-color:white;
 cursor:pointer;
+color:white;
 }
 
 /* MOVIL */
@@ -281,8 +283,17 @@ min-height:auto;
 
 .topbar{
 flex-direction:column;
+align-items:center;
 text-align:center;
 gap:20px;
+}
+
+.topbar h1{
+font-size:35px;
+}
+
+.topbar p{
+font-size:18px;
 }
 
 .top-right{
@@ -290,7 +301,12 @@ flex-direction:column;
 }
 
 .logo{
-width:100px;
+width:85px;
+}
+
+.usuario-box{
+flex-direction:column;
+font-size:16px;
 }
 
 .form-grid{
@@ -301,16 +317,12 @@ grid-template-columns:1fr;
 grid-column:span 1;
 }
 
-.usuario-box{
-flex-direction:column;
-}
-
 .login-card{
 width:100%;
 }
 
 table{
-min-width:700px;
+min-width:900px;
 }
 
 }
