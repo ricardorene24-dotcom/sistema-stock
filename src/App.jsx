@@ -150,7 +150,9 @@ function App() {
 
   const listaMateriales = [
     ...new Set(
-      materiales.map((m) => m.descripcion)
+      materiales.map((m) =>
+        m.descripcion.trim().toLowerCase()
+      )
     ),
   ]
 
@@ -158,7 +160,8 @@ function App() {
     filtroMaterial === 'todos'
       ? materiales
       : materiales.filter(
-          (m) => m.descripcion === filtroMaterial
+          (m) =>
+            m.descripcion.trim().toLowerCase() === filtroMaterial
         )
 
   return (
@@ -364,7 +367,7 @@ function App() {
                     key={material}
                     value={material}
                   >
-                    {material}
+                    {material.toUpperCase()}
                   </option>
                 ))}
               </select>
