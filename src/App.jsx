@@ -64,100 +64,74 @@ function App() {
   }
 
   async function obtenerMateriales() {
-    const { data,error }=
+    const { data, error } =
       await supabase
-      .from('materiales')
-      .select('*')
-      .order('id',{
-        ascending:false
-      })
+        .from('materiales')
+        .select('*')
+        .order('id', {
+          ascending: false,
+        })
 
-    if(!error){
+    if (!error) {
       setMateriales(data)
     }
   }
 
-  async function obtenerMovimientos(){
-
-    const {data,error}=
+  async function obtenerMovimientos() {
+    const { data, error } =
       await supabase
-      .from('movimientos')
-      .select('*')
-      .order(
-      'created_at',
-      {
-      ascending:false
-      })
+        .from('movimientos')
+        .select('*')
+        .order('created_at', {
+          ascending: false,
+        })
 
-    if(!error){
+    if (!error) {
       setMovimientos(data)
     }
   }
 
-  function editarMaterial(material){
-
+  function editarMaterial(material) {
     setEditandoId(material.id)
 
-    setDescripcion(
-      material.descripcion
-    )
-
-    setCantidad(
-      material.cantidad
-    )
-
-    setMedida(
-      material.medida
-    )
-
-    setEspesor(
-      material.espesor
-    )
-
-    setColor(
-      material.color
-    )
+    setDescripcion(material.descripcion)
+    setCantidad(material.cantidad)
+    setMedida(material.medida)
+    setEspesor(material.espesor)
+    setColor(material.color)
 
     setVista('nuevo')
   }
 
-  async function guardarMaterial(){
-
-    if(!usuario){
-      alert(
-      'Debes iniciar sesión'
-      )
+  async function guardarMaterial() {
+    if (!usuario) {
+      alert('Debes iniciar sesión')
       return
     }
 
-    if(editandoId){
-
+    if (editandoId) {
       await supabase
-      .from('materiales')
-      .update({
-        descripcion,
-        cantidad,
-        medida,
-        espesor,
-        color
-      })
-      .eq(
-      'id',
-      editandoId
-      )
-
-    }else{
-
+        .from('materiales')
+        .update({
+          descripcion,
+          cantidad,
+          medida,
+          espesor,
+          color,
+        })
+        .eq('id', editandoId)
+    } else {
       await supabase
-      .from('materiales')
-      .insert([{
-        descripcion,
-        cantidad,
-        medida,
-        espesor,
-        color
-      }])
-
+        .from('materiales')
+        .insert([
+          {
+            descripcion,
+            cantidad,
+            medida,
+            espesor,
+            color,
+          },
+        ])
     }
 
     setDescripcion('')
@@ -165,491 +139,329 @@ function App() {
     setMedida('')
     setEspesor('')
     setColor('')
-
     setEditandoId(null)
 
     obtenerMateriales()
 
-    setVista(
-      'inventario'
-    )
+    setVista('inventario')
   }
 
-  async function eliminarMaterial(id){
+  async function eliminarMaterial(id) {
+    const confirmar =
+      confirm('¿Eliminar?')
 
-    const confirmar=
-      confirm(
-      '¿Eliminar?'
-      )
-
-    if(!confirmar)
-      return
+    if (!confirmar) return
 
     await supabase
-    .from('materiales')
-    .delete()
-    .eq('id',id)
+      .from('materiales')
+      .delete()
+      .eq('id', id)
 
     obtenerMateriales()
   }
 
   return (
+    <div className="layout">
+
+      <aside className="sidebar">
+
+        <div className="brand">
+          CESART
+          <br />
+          SYSTEM
+        </div>
+
+        <nav className="menu">
 
-<div className="layout">
-
-<aside className="sidebar">
+          {usuario && (
+            <button
+              className={vista === 'nuevo' ? 'activo' : ''}
+              onClick={() => setVista('nuevo')}
+            >
+              Nuevo Producto
+            </button>
+          )}
 
-<div className="brand">
+          <button
+            className={vista === 'inventario' ? 'activo' : ''}
+            onClick={() => setVista('inventario')}
+          >
+            Inventario
+          </button>
+
+          {usuario && (
+            <button
+              className={vista === 'movimientos' ? 'activo' : ''}
+              onClick={() => setVista('movimientos')}
+            >
+              Movimientos
+            </button>
+          )}
+
+          {usuario && (
+            <button
+              className={vista === 'reportes' ? 'activo' : ''}
+              onClick={() => setVista('reportes')}
+            >
+              Reportes
+            </button>
+          )}
+
+        </nav>
+
+      </aside>
+
+      <main className="contenido">
+
+        <header className="topbar">
+
+          <div></div>
+
+          <div className="top-right">
+
+            {!usuario &&
+              vista !== 'login' && (
+                <>
+                  <button
+                    className="btn-login-top"
+                    onClick={() => setVista('login')}
+                  >
+                    Iniciar sesión
+                  </button>
+
+                  <img
+                    src={logo}
+                    alt=""
+                    className="logo"
+                  />
+                </>
+              )}
+
+            {usuario && (
+
+              <div className="usuario-box">
+
+                <span>
+                  Bienvenido Ricardo ✅
+                </span>
+
+                <button
+                  className="btn-logout"
+                  onClick={cerrarSesion}
+                >
+                  Cerrar sesión
+                </button>
+
+                <img
+                  src={logo}
+                  alt=""
+                  className="logo"
+                />
+
+              </div>
+
+            )}
+
+          </div>
+
+        </header>
+
+        {vista === 'login' && (
+
+          <section className="login-page">
+
+            <div className="login-card">
+
+              <img
+                src={logo}
+                className="login-logo"
+              />
+
+              <h2>
+                Iniciar sesión
+              </h2>
+
+              <input
+                type="email"
+                placeholder="Usuario"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+              />
 
-CESART
-<br/>
-SYSTEM
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+              />
+
+              <button
+                onClick={iniciarSesion}
+              >
+                Iniciar sesión
+              </button>
+
+            </div>
+
+          </section>
 
-</div>
+        )}
+
+        {vista === 'nuevo' &&
+          usuario && (
+
+            <section className="card">
+
+              <h2>
+                Nuevo Producto
+              </h2>
 
-<nav className="menu">
-
-{usuario&&(
-<button
-onClick={()=>
-setVista(
-'nuevo'
-)}
->
-Nuevo Producto
-</button>
-)}
-
-<button
-onClick={()=>
-setVista(
-'inventario'
-)}
->
-Inventario
-</button>
+              <div className="form-grid">
 
-{usuario&&(
-<button
-onClick={()=>
-setVista(
-'movimientos'
-)}
->
-Movimientos
-</button>
-)}
+                <input
+                  placeholder="Descripción"
+                  value={descripcion}
+                  onChange={(e) =>
+                    setDescripcion(e.target.value)
+                  }
+                />
 
-{usuario&&(
-<button
-onClick={()=>
-setVista(
-'reportes'
-)}
->
-Reportes
-</button>
-)}
+                <input
+                  placeholder="Cantidad"
+                  value={cantidad}
+                  onChange={(e) =>
+                    setCantidad(e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Medida"
+                  value={medida}
+                  onChange={(e) =>
+                    setMedida(e.target.value)
+                  }
+                />
 
-</nav>
+                <input
+                  placeholder="Espesor"
+                  value={espesor}
+                  onChange={(e) =>
+                    setEspesor(e.target.value)
+                  }
+                />
 
-</aside>
+                <input
+                  placeholder="Color"
+                  value={color}
+                  onChange={(e) =>
+                    setColor(e.target.value)
+                  }
+                />
 
-<main className="contenido">
+                <button
+                  className="btn-primary"
+                  onClick={guardarMaterial}
+                >
+                  {editandoId
+                    ? 'Guardar Cambios'
+                    : 'Agregar Producto'}
+                </button>
 
-<header className="topbar">
+              </div>
 
-<div></div>
-
-<div className="top-right">
-
-{!usuario &&
-vista!=='login'&&(
-
-<>
-
-<button
-className="
-btn-login-top"
-onClick={()=>
-setVista(
-'login'
-)}
->
-Iniciar sesión
-</button>
-
-<img
-src={logo}
-alt=""
-className="logo"
-/>
-
-</>
-
-)}
-
-{usuario&&(
-
-<div
-className="
-usuario-box"
->
-
-<span>
-
-Bienvenido Ricardo ✅
-
-</span>
-
-<button
-className="
-btn-logout"
-onClick={
-cerrarSesion
-}
->
-
-Cerrar sesión
-
-</button>
-
-<img
-src={logo}
-alt=""
-className="
-logo"
-/>
-
-</div>
-
-)}
-
-</div>
-
-</header>
-
-{vista==='login'&&(
-
-<section
-className="
-login-page"
->
-
-<div
-className="
-login-card"
->
-
-<img
-src={logo}
-className="
-login-logo"
-/>
-
-<h2>
-Iniciar sesión
-</h2>
-
-<input
-type="email"
-placeholder="
-Usuario"
-value={email}
-onChange={
-(e)=>
-setEmail(
-e.target.value
-)
-}
-/>
-
-<input
-type="password"
-placeholder="
-Contraseña"
-value={
-password
-}
-onChange={
-(e)=>
-setPassword(
-e.target.value
-)
-}
-/>
-
-<button
-onClick={
-iniciarSesion
-}
->
-
-Iniciar sesión
-
-</button>
-
-</div>
-
-</section>
-
-)}
-
-{vista==='nuevo'
-&&usuario&&(
-
-<section
-className="
-card"
->
-
-<h2>
-Nuevo Producto
-</h2>
-
-<div
-className="
-form-grid"
->
-
-<input
-placeholder="Descripción"
-value={descripcion}
-onChange={(e)=>
-setDescripcion(
-e.target.value
-)}
-/>
-
-<input
-placeholder="Cantidad"
-value={cantidad}
-onChange={(e)=>
-setCantidad(
-e.target.value
-)}
-/>
-
-<input
-placeholder="Medida"
-value={medida}
-onChange={(e)=>
-setMedida(
-e.target.value
-)}
-/>
-
-<input
-placeholder="Espesor"
-value={espesor}
-onChange={(e)=>
-setEspesor(
-e.target.value
-)}
-/>
-
-<input
-placeholder="Color"
-value={color}
-onChange={(e)=>
-setColor(
-e.target.value
-)}
-/>
-
-<button
-className="
-btn-primary"
-onClick={
-guardarMaterial
-}
->
-
-{editandoId
-?
-'Guardar Cambios'
-:
-'Agregar Producto'}
-
-</button>
-
-</div>
-
-</section>
-
-)}
-
-{vista===
-'inventario'
-&&(
-
-<section
-className="
-card"
->
-
-<h2>
-Inventario
-</h2>
-
-<div
-className="
-tabla-scroll"
->
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>
-Descripción
-</th>
-
-<th>
-Cantidad
-</th>
-
-<th>
-Medida
-</th>
-
-<th>
-Espesor
-</th>
-
-<th>
-Color
-</th>
-
-{usuario&&
-<th>
-Acciones
-</th>}
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{
-materiales.map(
-(m)=>(
-<tr
-key={m.id}
->
-
-<td>
-{m.descripcion}
-</td>
+            </section>
 
-<td>
-{m.cantidad}
-</td>
+          )}
 
-<td>
-{m.medida}
-</td>
+        {vista === 'inventario' && (
 
-<td>
-{m.espesor}
-</td>
+          <section className="card">
 
-<td>
-{m.color}
-</td>
+            <h2>
+              Inventario
+            </h2>
 
-{usuario&&(
+            <div className="tabla-scroll">
 
-<td>
+              <table>
 
-<div
-className="
-acciones"
->
+                <thead>
+                  <tr>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Medida</th>
+                    <th>Espesor</th>
+                    <th>Color</th>
 
-<button
-className="
-btn-edit"
-onClick=
-{()=>editarMaterial(m)}
->
-Editar
-</button>
+                    {usuario &&
+                      <th>Acciones</th>}
+                  </tr>
+                </thead>
 
-<button
-className="
-btn-delete"
-onClick=
-{()=>eliminarMaterial(m.id)}
->
-Eliminar
-</button>
+                <tbody>
 
-</div>
+                  {materiales.map((m) => (
 
-</td>
+                    <tr key={m.id}>
 
-)}
+                      <td>{m.descripcion}</td>
+                      <td>{m.cantidad}</td>
+                      <td>{m.medida}</td>
+                      <td>{m.espesor}</td>
+                      <td>{m.color}</td>
 
-</tr>
-))
-}
+                      {usuario && (
 
-</tbody>
+                        <td>
 
-</table>
+                          <div className="acciones">
 
-</div>
+                            <button
+                              className="btn-edit"
+                              onClick={() =>
+                                editarMaterial(m)
+                              }
+                            >
+                              Editar
+                            </button>
 
-</section>
+                            <button
+                              className="btn-delete"
+                              onClick={() =>
+                                eliminarMaterial(m.id)
+                              }
+                            >
+                              Eliminar
+                            </button>
 
-)}
+                          </div>
 
-{vista==='movimientos'
-&&usuario&&(
+                        </td>
 
-<section
-className="
-card"
->
+                      )}
 
-<h2>
-Movimientos
-</h2>
+                    </tr>
 
-Próximamente
+                  ))}
 
-</section>
+                </tbody>
 
-)}
+              </table>
 
-{vista==='reportes'
-&&usuario&&(
+            </div>
 
-<section
-className="
-card"
->
+          </section>
 
-<h2>
-Reportes
-</h2>
+        )}
 
-Próximamente
+      </main>
 
-</section>
-
-)}
-
-</main>
-
-</div>
-
-)
-
+    </div>
+  )
 }
 
 export default App
