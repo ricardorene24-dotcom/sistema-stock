@@ -7,6 +7,7 @@ function App() {
   const [vista, setVista] = useState('inventario')
 
   const [materiales, setMateriales] = useState([])
+  const [filtroMaterial, setFiltroMaterial] = useState('todos')
   const [movimientos, setMovimientos] = useState([])
 
   const [descripcion, setDescripcion] = useState('')
@@ -48,7 +49,6 @@ function App() {
     }
 
     await verificarUsuario()
-
     setEmail('')
     setPassword('')
     setVista('inventario')
@@ -56,9 +56,7 @@ function App() {
 
   async function cerrarSesion() {
     await supabase.auth.signOut()
-
     setUsuario(null)
-
     setVista('inventario')
   }
 
@@ -67,9 +65,7 @@ function App() {
       await supabase
         .from('materiales')
         .select('*')
-        .order('id', {
-          ascending: false,
-        })
+        .order('id', { ascending: false })
 
     if (!error) {
       setMateriales(data)
@@ -81,9 +77,7 @@ function App() {
       await supabase
         .from('movimientos')
         .select('*')
-        .order('created_at', {
-          ascending: false,
-        })
+        .order('created_at', { ascending: false })
 
     if (!error) {
       setMovimientos(data)
@@ -92,13 +86,11 @@ function App() {
 
   function editarMaterial(material) {
     setEditandoId(material.id)
-
     setDescripcion(material.descripcion)
     setCantidad(material.cantidad)
     setMedida(material.medida)
     setEspesor(material.espesor)
     setColor(material.color)
-
     setVista('nuevo')
   }
 
@@ -141,14 +133,11 @@ function App() {
     setEditandoId(null)
 
     obtenerMateriales()
-
     setVista('inventario')
   }
 
   async function eliminarMaterial(id) {
-    const confirmar =
-      confirm('¿Eliminar?')
-
+    const confirmar = confirm('¿Eliminar?')
     if (!confirmar) return
 
     await supabase
@@ -159,11 +148,23 @@ function App() {
     obtenerMateriales()
   }
 
+  const listaMateriales = [
+    ...new Set(
+      materiales.map((m) => m.descripcion)
+    ),
+  ]
+
+  const materialesFiltrados =
+    filtroMaterial === 'todos'
+      ? materiales
+      : materiales.filter(
+          (m) => m.descripcion === filtroMaterial
+        )
+
   return (
     <div className="layout">
 
       <aside className="sidebar">
-
         <div className="brand">
           CESART
           <br />
@@ -171,7 +172,6 @@ function App() {
         </div>
 
         <nav className="menu">
-
           {usuario && (
             <button
               className={vista === 'nuevo' ? 'activo' : ''}
@@ -205,19 +205,14 @@ function App() {
               Reportes
             </button>
           )}
-
         </nav>
-
       </aside>
 
       <main className="contenido">
 
         <header className="topbar">
-
           <div className="top-right">
-
-            {!usuario &&
-            vista !== 'login' && (
+            {!usuario && vista !== 'login' && (
               <>
                 <button
                   className="btn-login-top"
@@ -235,9 +230,7 @@ function App() {
             )}
 
             {usuario && (
-
               <div className="usuario-box">
-
                 <span>
                   Bienvenido Ricardo ✅
                 </span>
@@ -254,33 +247,26 @@ function App() {
                   alt=""
                   className="logo"
                 />
-
               </div>
-
             )}
-
           </div>
-
         </header>
 
         {vista === 'login' && (
           <section className="login-page">
             <div className="login-card">
-
               <img
                 src={logo}
                 className="login-logo"
               />
 
-              <h2>
-                Iniciar sesión
-              </h2>
+              <h2>Iniciar sesión</h2>
 
               <input
                 type="email"
                 placeholder="Usuario"
                 value={email}
-                onChange={(e)=>
+                onChange={(e) =>
                   setEmail(e.target.value)
                 }
               />
@@ -289,34 +275,27 @@ function App() {
                 type="password"
                 placeholder="Contraseña"
                 value={password}
-                onChange={(e)=>
+                onChange={(e) =>
                   setPassword(e.target.value)
                 }
               />
 
-              <button
-                onClick={iniciarSesion}
-              >
+              <button onClick={iniciarSesion}>
                 Iniciar sesión
               </button>
-
             </div>
           </section>
         )}
 
         {vista === 'nuevo' && usuario && (
           <section className="card">
-
-            <h2>
-              Nuevo Producto
-            </h2>
+            <h2>Nuevo Producto</h2>
 
             <div className="form-grid">
-
               <input
                 placeholder="Descripción"
                 value={descripcion}
-                onChange={(e)=>
+                onChange={(e) =>
                   setDescripcion(e.target.value)
                 }
               />
@@ -324,7 +303,7 @@ function App() {
               <input
                 placeholder="Cantidad"
                 value={cantidad}
-                onChange={(e)=>
+                onChange={(e) =>
                   setCantidad(e.target.value)
                 }
               />
@@ -332,7 +311,7 @@ function App() {
               <input
                 placeholder="Medida"
                 value={medida}
-                onChange={(e)=>
+                onChange={(e) =>
                   setMedida(e.target.value)
                 }
               />
@@ -340,7 +319,7 @@ function App() {
               <input
                 placeholder="Espesor"
                 value={espesor}
-                onChange={(e)=>
+                onChange={(e) =>
                   setEspesor(e.target.value)
                 }
               />
@@ -348,7 +327,7 @@ function App() {
               <input
                 placeholder="Color"
                 value={color}
-                onChange={(e)=>
+                onChange={(e) =>
                   setColor(e.target.value)
                 }
               />
@@ -361,21 +340,38 @@ function App() {
                   ? 'Guardar Cambios'
                   : 'Agregar Producto'}
               </button>
-
             </div>
-
           </section>
         )}
 
         {vista === 'inventario' && (
           <section className="card">
-
             <h2>Inventario</h2>
 
+            <div className="filtros">
+              <select
+                value={filtroMaterial}
+                onChange={(e) =>
+                  setFiltroMaterial(e.target.value)
+                }
+              >
+                <option value="todos">
+                  Todos los materiales
+                </option>
+
+                {listaMateriales.map((material) => (
+                  <option
+                    key={material}
+                    value={material}
+                  >
+                    {material}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="tabla-scroll">
-
               <table>
-
                 <thead>
                   <tr>
                     <th>Descripción</th>
@@ -384,88 +380,65 @@ function App() {
                     <th>Espesor</th>
                     <th>Color</th>
 
-                    {usuario &&
-                    <th>Acciones</th>}
+                    {usuario && <th>Acciones</th>}
                   </tr>
                 </thead>
 
                 <tbody>
+                  {materialesFiltrados.map((m) => (
+                    <tr key={m.id}>
+                      <td>{m.descripcion}</td>
+                      <td>{m.cantidad}</td>
+                      <td>{m.medida}</td>
+                      <td>{m.espesor}</td>
+                      <td>{m.color}</td>
 
-                {materiales.map((m)=>(
-                  <tr key={m.id}>
+                      {usuario && (
+                        <td>
+                          <div className="acciones">
+                            <button
+                              className="btn-edit"
+                              onClick={() =>
+                                editarMaterial(m)
+                              }
+                            >
+                              Editar
+                            </button>
 
-                    <td>{m.descripcion}</td>
-                    <td>{m.cantidad}</td>
-                    <td>{m.medida}</td>
-                    <td>{m.espesor}</td>
-                    <td>{m.color}</td>
-
-                    {usuario && (
-                    <td>
-
-                      <div className="acciones">
-
-                        <button
-                          className="btn-edit"
-                          onClick={()=>
-                            editarMaterial(m)
-                          }
-                        >
-                          Editar
-                        </button>
-
-                        <button
-                          className="btn-delete"
-                          onClick={()=>
-                            eliminarMaterial(m.id)
-                          }
-                        >
-                          Eliminar
-                        </button>
-
-                      </div>
-
-                    </td>
-                    )}
-
-                  </tr>
-                ))}
-
+                            <button
+                              className="btn-delete"
+                              onClick={() =>
+                                eliminarMaterial(m.id)
+                              }
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
                 </tbody>
-
               </table>
-
             </div>
-
           </section>
         )}
 
         {vista === 'movimientos' && usuario && (
           <section className="card">
-
             <h2>Movimientos</h2>
-
-            <p>
-              Próximamente...
-            </p>
-
+            <p>Próximamente...</p>
           </section>
         )}
 
         {vista === 'reportes' && usuario && (
           <section className="card">
-
             <h2>Reportes</h2>
-
-            <p>
-              Próximamente...
-            </p>
-
+            <p>Próximamente...</p>
           </section>
         )}
 
       </main>
-
     </div>
   )
 }
