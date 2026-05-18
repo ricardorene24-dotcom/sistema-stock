@@ -20,8 +20,6 @@ function App() {
   const [usuario, setUsuario] = useState(null)
 
   const [editandoId, setEditandoId] = useState(null)
-  const [cantidadOriginal, setCantidadOriginal] =
-    useState(null)
 
   useEffect(() => {
     obtenerMateriales()
@@ -66,30 +64,102 @@ function App() {
   }
 
   async function obtenerMateriales() {
-    const { data, error } = await supabase
+    const { data,error }=
+      await supabase
       .from('materiales')
       .select('*')
-      .order('id', {
-        ascending: false,
+      .order('id',{
+        ascending:false
       })
 
-    if (!error)
+    if(!error){
       setMateriales(data)
+    }
   }
 
-  async function obtenerMovimientos() {
-    const { data, error } = await supabase
+  async function obtenerMovimientos(){
+
+    const {data,error}=
+      await supabase
       .from('movimientos')
       .select('*')
-      .order('created_at', {
-        ascending: false,
+      .order(
+      'created_at',
+      {
+      ascending:false
       })
 
-    if (!error)
+    if(!error){
       setMovimientos(data)
+    }
   }
 
-  function limpiarFormulario() {
+  function editarMaterial(material){
+
+    setEditandoId(material.id)
+
+    setDescripcion(
+      material.descripcion
+    )
+
+    setCantidad(
+      material.cantidad
+    )
+
+    setMedida(
+      material.medida
+    )
+
+    setEspesor(
+      material.espesor
+    )
+
+    setColor(
+      material.color
+    )
+
+    setVista('nuevo')
+  }
+
+  async function guardarMaterial(){
+
+    if(!usuario){
+      alert(
+      'Debes iniciar sesión'
+      )
+      return
+    }
+
+    if(editandoId){
+
+      await supabase
+      .from('materiales')
+      .update({
+        descripcion,
+        cantidad,
+        medida,
+        espesor,
+        color
+      })
+      .eq(
+      'id',
+      editandoId
+      )
+
+    }else{
+
+      await supabase
+      .from('materiales')
+      .insert([{
+        descripcion,
+        cantidad,
+        medida,
+        espesor,
+        color
+      }])
+
+    }
+
     setDescripcion('')
     setCantidad('')
     setMedida('')
@@ -97,140 +167,30 @@ function App() {
     setColor('')
 
     setEditandoId(null)
-    setCantidadOriginal(null)
-  }
 
-  function editarMaterial(material) {
-    setEditandoId(material.id)
+    obtenerMateriales()
 
-    setCantidadOriginal(
-      Number(material.cantidad)
+    setVista(
+      'inventario'
     )
-
-    setDescripcion(
-      material.descripcion
-    )
-
-    setCantidad(material.cantidad)
-
-    setMedida(material.medida)
-
-    setEspesor(material.espesor)
-
-    setColor(material.color)
-
-    setVista('nuevo')
-  }
-
-  async function guardarMaterial() {
-
-    if (!usuario) {
-      alert(
-        'Debes iniciar sesión'
-      )
-      return
-    }
-
-    if (
-      !descripcion ||
-      !cantidad
-    ) {
-      alert(
-        'Completa descripción y cantidad'
-      )
-      return
-    }
-
-    if (editandoId) {
-
-      const nuevaCantidad =
-        Number(cantidad)
-
-      const { error } =
-        await supabase
-          .from(
-            'materiales'
-          )
-          .update({
-            descripcion,
-            cantidad:
-              nuevaCantidad,
-            medida,
-            espesor,
-            color,
-          })
-          .eq(
-            'id',
-            editandoId
-          )
-
-      if (error) {
-        alert(
-          'Error al actualizar'
-        )
-        return
-      }
-
-      limpiarFormulario()
-
-      obtenerMateriales()
-
-      setVista(
-        'inventario'
-      )
-
-      return
-    }
-
-    const { error } =
-      await supabase
-        .from(
-          'materiales'
-        )
-        .insert([
-          {
-            descripcion,
-            cantidad,
-            medida,
-            espesor,
-            color,
-          },
-        ])
-
-    if (!error) {
-
-      limpiarFormulario()
-
-      obtenerMateriales()
-
-      setVista(
-        'inventario'
-      )
-    }
   }
 
   async function eliminarMaterial(id){
 
-    if(!usuario)return
-
     const confirmar=
       confirm(
-      '¿Eliminar material?'
-    )
+      '¿Eliminar?'
+      )
 
     if(!confirmar)
       return
 
-    const {error}=
-      await supabase
-      .from(
-        'materiales'
-      )
-      .delete()
-      .eq('id',id)
+    await supabase
+    .from('materiales')
+    .delete()
+    .eq('id',id)
 
-    if(!error)
-      obtenerMateriales()
+    obtenerMateriales()
   }
 
   return (
@@ -249,13 +209,12 @@ SYSTEM
 
 <nav className="menu">
 
-{usuario && (
+{usuario&&(
 <button
 onClick={()=>
 setVista(
 'nuevo'
-)
-}
+)}
 >
 Nuevo Producto
 </button>
@@ -265,31 +224,28 @@ Nuevo Producto
 onClick={()=>
 setVista(
 'inventario'
-)
-}
+)}
 >
 Inventario
 </button>
 
-{usuario && (
+{usuario&&(
 <button
 onClick={()=>
 setVista(
 'movimientos'
-)
-}
+)}
 >
 Movimientos
 </button>
 )}
 
-{usuario && (
+{usuario&&(
 <button
 onClick={()=>
 setVista(
 'reportes'
-)
-}
+)}
 >
 Reportes
 </button>
@@ -303,31 +259,14 @@ Reportes
 
 <header className="topbar">
 
-<div>
-
-<h1>
-Sistema de Stock Cesart
-</h1>
-
-<p>
-Control de Inventario
-</p>
-
-</div>
+<div></div>
 
 <div className="top-right">
 
 {!usuario &&
-vista !==
-'login' && (
+vista!=='login'&&(
 
 <>
-
-<img
-src={logo}
-alt="logo"
-className="logo"
-/>
 
 <button
 className="
@@ -335,25 +274,22 @@ btn-login-top"
 onClick={()=>
 setVista(
 'login'
-)
-}
+)}
 >
 Iniciar sesión
 </button>
+
+<img
+src={logo}
+alt=""
+className="logo"
+/>
 
 </>
 
 )}
 
-{usuario && (
-
-<>
-
-<img
-src={logo}
-alt="logo"
-className="logo"
-/>
+{usuario&&(
 
 <div
 className="
@@ -362,8 +298,7 @@ usuario-box"
 
 <span>
 
-Bienvenido
-Ricardo ✅
+Bienvenido Ricardo ✅
 
 </span>
 
@@ -379,9 +314,14 @@ Cerrar sesión
 
 </button>
 
-</div>
+<img
+src={logo}
+alt=""
+className="
+logo"
+/>
 
-</>
+</div>
 
 )}
 
@@ -389,8 +329,7 @@ Cerrar sesión
 
 </header>
 
-{vista ===
-'login' && (
+{vista==='login'&&(
 
 <section
 className="
@@ -404,7 +343,6 @@ login-card"
 
 <img
 src={logo}
-alt="logo"
 className="
 login-logo"
 />
@@ -421,8 +359,7 @@ value={email}
 onChange={
 (e)=>
 setEmail(
-e.target
-.value
+e.target.value
 )
 }
 />
@@ -437,8 +374,7 @@ password
 onChange={
 (e)=>
 setPassword(
-e.target
-.value
+e.target.value
 )
 }
 />
@@ -459,13 +395,12 @@ Iniciar sesión
 
 )}
 
-{vista ===
-'nuevo' &&
-usuario && (
+{vista==='nuevo'
+&&usuario&&(
 
 <section
-className=
-"card"
+className="
+card"
 >
 
 <h2>
@@ -473,78 +408,53 @@ Nuevo Producto
 </h2>
 
 <div
-className=
-"form-grid"
+className="
+form-grid"
 >
 
 <input
 placeholder="Descripción"
-value={
-descripcion
-}
-onChange={
-(e)=>
+value={descripcion}
+onChange={(e)=>
 setDescripcion(
-e.target
-.value
-)
-}
+e.target.value
+)}
 />
 
 <input
 placeholder="Cantidad"
-value={
-cantidad
-}
-onChange={
-(e)=>
+value={cantidad}
+onChange={(e)=>
 setCantidad(
-e.target
-.value
-)
-}
+e.target.value
+)}
 />
 
 <input
 placeholder="Medida"
-value={
-medida
-}
-onChange={
-(e)=>
+value={medida}
+onChange={(e)=>
 setMedida(
-e.target
-.value
-)
-}
+e.target.value
+)}
 />
 
 <input
 placeholder="Espesor"
-value={
-espesor
-}
-onChange={
-(e)=>
+value={espesor}
+onChange={(e)=>
 setEspesor(
-e.target
-.value
-)
-}
+e.target.value
+)}
 />
 
 <input
 placeholder="Color"
-value={
-color
-}
-onChange={
-(e)=>
+value={color}
+onChange={(e)=>
 setColor(
-e.target
-.value
-)
-}
+e.target.value
+)}
 />
 
 <button
@@ -559,8 +469,7 @@ guardarMaterial
 ?
 'Guardar Cambios'
 :
-'Agregar Producto'
-}
+'Agregar Producto'}
 
 </button>
 
@@ -571,11 +480,12 @@ guardarMaterial
 )}
 
 {vista===
-'inventario'&&(
+'inventario'
+&&(
 
 <section
-className=
-"card"
+className="
+card"
 >
 
 <h2>
@@ -613,7 +523,7 @@ Espesor
 Color
 </th>
 
-{usuario &&
+{usuario&&
 <th>
 Acciones
 </th>}
@@ -666,9 +576,7 @@ btn-edit"
 onClick=
 {()=>editarMaterial(m)}
 >
-
 Editar
-
 </button>
 
 <button
@@ -677,9 +585,7 @@ btn-delete"
 onClick=
 {()=>eliminarMaterial(m.id)}
 >
-
 Eliminar
-
 </button>
 
 </div>
@@ -702,13 +608,12 @@ Eliminar
 
 )}
 
-{vista===
-'movimientos'
+{vista==='movimientos'
 &&usuario&&(
 
 <section
-className=
-"card"
+className="
+card"
 >
 
 <h2>
@@ -721,13 +626,12 @@ Próximamente
 
 )}
 
-{vista===
-'reportes'
+{vista==='reportes'
 &&usuario&&(
 
 <section
-className=
-"card"
+className="
+card"
 >
 
 <h2>
