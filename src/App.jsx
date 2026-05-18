@@ -4,29 +4,25 @@ import './App.css'
 import logo from './assets/Logo Cesart.png'
 
 function App() {
+  const [vista, setVista] = useState('inventario')
+  const [menuAbierto, setMenuAbierto] = useState(true)
+
   const [materiales, setMateriales] = useState([])
+  const [movimientos, setMovimientos] = useState([])
+
   const [descripcion, setDescripcion] = useState('')
   const [cantidad, setCantidad] = useState('')
   const [medida, setMedida] = useState('')
   const [espesor, setEspesor] = useState('')
   const [color, setColor] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [usuario, setUsuario] = useState(null)
+
   const [editandoId, setEditandoId] = useState(null)
+  const [cantidadOriginal, setCantidadOriginal] = useState(null)
 
   useEffect(() => {
     obtenerMateriales()
-    verificarUsuario()
+    obtenerMovimientos()
   }, [])
-
-  async function verificarUsuario() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    setUsuario(user)
-  }
 
   async function obtenerMateriales() {
     const { data, error } = await supabase
@@ -34,28 +30,16 @@ function App() {
       .select('*')
       .order('id', { ascending: false })
 
-    if (!error) {
-      setMateriales(data)
-    }
+    if (!error) setMateriales(data)
   }
 
-  async function iniciarSesion() {
-    const { error } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+  async function obtenerMovimientos() {
+    const { data, error } = await supabase
+      .from('movimientos')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    if (error) {
-      alert('Credenciales incorrectas')
-    } else {
-      verificarUsuario()
-    }
-  }
-
-  async function cerrarSesion() {
-    await supabase.auth.signOut()
-    setUsuario(null)
+    if (!error) setMovimientos(data)
   }
 
   function limpiarFormulario() {
@@ -65,61 +49,103 @@ function App() {
     setEspesor('')
     setColor('')
     setEditandoId(null)
+    setCantidadOriginal(null)
   }
 
   function editarMaterial(material) {
     setEditandoId(material.id)
+    setCantidadOriginal(Number(material.cantidad))
 
     setDescripcion(material.descripcion)
     setCantidad(material.cantidad)
     setMedida(material.medida)
     setEspesor(material.espesor)
     setColor(material.color)
+
+    setVista('nuevo')
   }
 
-  async function agregarMaterial() {
+  async function guardarMaterial() {
+    if (!descripcion || !cantidad) {
+      alert('Completa descripción y cantidad')
+      return
+    }
+
     if (editandoId) {
+      const nuevaCantidad = Number(cantidad)
+
       const { error } = await supabase
         .from('materiales')
         .update({
           descripcion,
-          cantidad,
+          cantidad: nuevaCantidad,
           medida,
           espesor,
           color,
         })
         .eq('id', editandoId)
 
-      if (!error) {
-        limpiarFormulario()
-        obtenerMateriales()
+      if (error) {
+        alert('Error al actualizar')
+        return
       }
 
+      if (cantidadOriginal !== nuevaCantidad) {
+        const observacion = prompt(
+          'Escribe una observación del movimiento'
+        )
+
+        await supabase.from('movimientos').insert([
+          {
+            material: descripcion,
+            cantidad_anterior: cantidadOriginal,
+            cantidad_nueva: nuevaCantidad,
+            diferencia: nuevaCantidad - cantidadOriginal,
+            observacion: observacion || 'Sin observación',
+          },
+        ])
+      }
+
+      limpiarFormulario()
+      obtenerMateriales()
+      obtenerMovimientos()
+      setVista('inventario')
       return
     }
 
-    const { error } = await supabase
-      .from('materiales')
-      .insert([
-        {
-          descripcion,
-          cantidad,
-          medida,
-          espesor,
-          color,
-        },
-      ])
+    const { error } = await supabase.from('materiales').insert([
+      {
+        descripcion,
+        cantidad: Number(cantidad),
+        medida,
+        espesor,
+        color,
+      },
+    ])
 
-    if (!error) {
-      limpiarFormulario()
-      obtenerMateriales()
+    if (error) {
+      alert('Error al guardar')
+      return
     }
+
+    await supabase.from('movimientos').insert([
+      {
+        material: descripcion,
+        cantidad_anterior: 0,
+        cantidad_nueva: Number(cantidad),
+        diferencia: Number(cantidad),
+        observacion: 'Nuevo producto agregado',
+      },
+    ])
+
+    limpiarFormulario()
+    obtenerMateriales()
+    obtenerMovimientos()
+    setVista('inventario')
   }
 
   async function eliminarMaterial(id) {
-    const confirmar =
-      confirm('¿Eliminar material?')
-
+    const confirmar = confirm('¿Eliminar material?')
     if (!confirmar) return
 
     const { error } = await supabase
@@ -127,230 +153,134 @@ function App() {
       .delete()
       .eq('id', id)
 
-    if (!error) {
-      obtenerMateriales()
-    }
+    if (!error) obtenerMateriales()
   }
 
   return (
-    <div className="container">
+    <div className="layout">
+      <aside className={menuAbierto ? 'sidebar abierto' : 'sidebar'}>
+        <div className="brand" onClick={() => setMenuAbierto(!menuAbierto)}>
+          CESART SYSTEM
+        </div>
 
-      <div className="header">
+        {menuAbierto && (
+          <nav className="menu">
+            <button onClick={() => setVista('nuevo')}>Nuevo Producto</button>
+            <button onClick={() => setVista('inventario')}>Inventario</button>
+            <button onClick={() => setVista('movimientos')}>Movimientos</button>
+            <button onClick={() => setVista('reportes')}>Reportes</button>
+          </nav>
+        )}
+      </aside>
 
-        <div className="titulo-area">
+      <main className="contenido">
+        <header className="topbar">
+          <div>
+            <h1>Sistema de Stock Cesart</h1>
+            <p>Control de Inventario</p>
+          </div>
 
-          <h1 className="titulo">
-            Sistema de Stock Cesart
-          </h1>
+          <img src={logo} alt="Logo Cesart" className="logo" />
+        </header>
 
-          {usuario && (
-            <div className="admin-bar">
+        {vista === 'nuevo' && (
+          <section className="card">
+            <h2>{editandoId ? 'Editar Producto' : 'Nuevo Producto'}</h2>
 
-              <span className="estado-admin">
-                Bienvenido Administrador
-                (Conectado ✅)
-              </span>
+            <div className="form-grid">
+              <input placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+              <input placeholder="Cantidad" value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
+              <input placeholder="Medida" value={medida} onChange={(e) => setMedida(e.target.value)} />
+              <input placeholder="Espesor" value={espesor} onChange={(e) => setEspesor(e.target.value)} />
+              <input placeholder="Color" value={color} onChange={(e) => setColor(e.target.value)} />
 
-              <button
-                className="boton salir"
-                onClick={cerrarSesion}
-              >
-                Cerrar Sesión
+              <button className="btn-primary" onClick={guardarMaterial}>
+                {editandoId ? 'Guardar Cambios' : 'Agregar Producto'}
               </button>
-
             </div>
-          )}
+          </section>
+        )}
 
-        </div>
+        {vista === 'inventario' && (
+          <section className="card">
+            <h2>Inventario</h2>
 
-        <img
-          src={logo}
-          alt="Logo"
-          className="logoEmpresa"
-        />
+            <div className="tabla-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Medida</th>
+                    <th>Espesor</th>
+                    <th>Color</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
 
-      </div>
+                <tbody>
+                  {materiales.map((m) => (
+                    <tr key={m.id}>
+                      <td>{m.descripcion}</td>
+                      <td>{m.cantidad}</td>
+                      <td>{m.medida}</td>
+                      <td>{m.espesor}</td>
+                      <td>{m.color}</td>
+                      <td>
+                        <div className="acciones">
+                          <button className="btn-edit" onClick={() => editarMaterial(m)}>Editar</button>
+                          <button className="btn-delete" onClick={() => eliminarMaterial(m.id)}>Eliminar</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
 
-      {!usuario ? (
-        <div className="panel">
+        {vista === 'movimientos' && (
+          <section className="card">
+            <h2>Movimientos</h2>
 
-          <div className="login-fila">
+            <div className="tabla-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Material</th>
+                    <th>Antes</th>
+                    <th>Ahora</th>
+                    <th>Diferencia</th>
+                    <th>Observación</th>
+                  </tr>
+                </thead>
 
-            <h2 className="login-titulo">
-              Login Administrador
-            </h2>
+                <tbody>
+                  {movimientos.map((mov) => (
+                    <tr key={mov.id}>
+                      <td>{new Date(mov.created_at).toLocaleString()}</td>
+                      <td>{mov.material}</td>
+                      <td>{mov.cantidad_anterior}</td>
+                      <td>{mov.cantidad_nueva}</td>
+                      <td>{mov.diferencia}</td>
+                      <td>{mov.observacion}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
 
-            <input
-              className="input login-input"
-              type="email"
-              placeholder="Correo"
-              value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
-            />
-
-            <input
-              className="input login-input"
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-            />
-
-            <button
-              className="boton login-boton"
-              onClick={iniciarSesion}
-            >
-              Iniciar Sesión
-            </button>
-
-          </div>
-
-        </div>
-      ) : (
-        <div className="panel">
-
-          <h2>
-            {editandoId
-              ? 'Editar Material'
-              : 'Agregar Material'}
-          </h2>
-
-          <div className="formulario">
-
-            <input
-              className="input"
-              placeholder="Descripción"
-              value={descripcion}
-              onChange={(e)=>
-                setDescripcion(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              placeholder="Cantidad"
-              value={cantidad}
-              onChange={(e)=>
-                setCantidad(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              placeholder="Medida"
-              value={medida}
-              onChange={(e)=>
-                setMedida(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              placeholder="Espesor"
-              value={espesor}
-              onChange={(e)=>
-                setEspesor(e.target.value)
-              }
-            />
-
-            <input
-              className="input"
-              placeholder="Color"
-              value={color}
-              onChange={(e)=>
-                setColor(e.target.value)
-              }
-            />
-
-            <button
-              className="boton boton-principal"
-              onClick={agregarMaterial}
-            >
-              {editandoId
-                ? 'Guardar Cambios'
-                : 'Agregar Material'}
-            </button>
-
-          </div>
-
-        </div>
-      )}
-
-      <div className="tabla-scroll">
-
-        <table className="tabla">
-
-          <thead>
-            <tr>
-
-              <th>Descripción</th>
-              <th>Cantidad</th>
-              <th>Medida</th>
-              <th>Espesor</th>
-              <th>Color</th>
-
-              {usuario &&
-              <th>Acciones</th>}
-
-            </tr>
-          </thead>
-
-          <tbody>
-
-          {materiales.map(
-            (material)=>(
-            <tr key={material.id}>
-
-              <td>{material.descripcion}</td>
-              <td>{material.cantidad}</td>
-              <td>{material.medida}</td>
-              <td>{material.espesor}</td>
-              <td>{material.color}</td>
-
-              {usuario && (
-              <td>
-
-              <div className="acciones">
-
-              <button
-                className="boton editar"
-                onClick={() =>
-                  editarMaterial(material)
-                }
-              >
-                Editar
-              </button>
-
-              <button
-                className="boton eliminar"
-                onClick={() =>
-                  eliminarMaterial(
-                    material.id
-                  )
-                }
-              >
-                Eliminar
-              </button>
-
-              </div>
-
-              </td>
-              )}
-
-            </tr>
-            )
-          )}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
+        {vista === 'reportes' && (
+          <section className="card">
+            <h2>Reportes</h2>
+            <p>Próximamente...</p>
+          </section>
+        )}
+      </main>
     </div>
   )
 }
