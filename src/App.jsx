@@ -8,6 +8,7 @@ function App() {
 
   const [materiales, setMateriales] = useState([])
   const [filtroMaterial, setFiltroMaterial] = useState('todos')
+  const [filtroEspesor, setFiltroEspesor] = useState('todos')
   const [movimientos, setMovimientos] = useState([])
 
   const [descripcion, setDescripcion] = useState('')
@@ -288,11 +289,21 @@ function App() {
     ...new Set(materiales.map((m) => normalizar(m.descripcion))),
   ]
 
-  const materialesFiltrados =
-    filtroMaterial === 'todos'
-      ? materiales
-      : materiales.filter((m) => normalizar(m.descripcion) === filtroMaterial)
+  const listaEspesores = [
+  ...new Set(materiales.map((m) => normalizar(m.espesor))),
+] 
 
+ const materialesFiltrados = materiales.filter((m) => {
+  const coincideMaterial =
+    filtroMaterial === 'todos' ||
+    normalizar(m.descripcion) === filtroMaterial
+
+  const coincideEspesor =
+    filtroEspesor === 'todos' ||
+    normalizar(m.espesor) === filtroEspesor
+
+  return coincideMaterial && coincideEspesor
+})
   return (
     <div className="layout">
       <aside className="sidebar">
@@ -442,20 +453,32 @@ function App() {
             <h2>Inventario</h2>
 
             <div className="filtros izquierda">
-              <select
-                value={filtroMaterial}
-                onChange={(e) => setFiltroMaterial(e.target.value)}
-              >
-                <option value="todos">Todos los materiales</option>
+  <select
+    value={filtroMaterial}
+    onChange={(e) => setFiltroMaterial(e.target.value)}
+  >
+    <option value="todos">Todos los materiales</option>
 
-                {listaMateriales.map((material) => (
-                  <option key={material} value={material}>
-                    {material.toUpperCase()}
-                  </option>
-                ))}
-              </select>
-            </div>
+    {listaMateriales.map((material) => (
+      <option key={material} value={material}>
+        {material.toUpperCase()}
+      </option>
+    ))}
+  </select>
 
+  <select
+    value={filtroEspesor}
+    onChange={(e) => setFiltroEspesor(e.target.value)}
+  >
+    <option value="todos">Todos los espesores</option>
+
+    {listaEspesores.map((espesor) => (
+      <option key={espesor} value={espesor}>
+        {espesor.toUpperCase()}
+      </option>
+    ))}
+  </select>
+</div>
             <div className="tabla-scroll">
               <table>
                 <thead>
